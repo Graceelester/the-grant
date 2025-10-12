@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ford Foundation Grants - Contact Us</title>
+        <link rel="icon" type="image/png" href="All-images/logo5.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="All-images/logo5.png">
+
+
+
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+        <!-- Lordicon Script -->
+        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+
+        <!-- External CSS -->
+        <link rel="stylesheet" href="styles/commonstyles.css">
+        <link rel="stylesheet" href="styles/navbar.css">
+        <link rel="stylesheet" href="styles/contact.css">
+        <link rel="stylesheet" href="styles/footer.css">
+
+
+    </head>
+
+
+    <body>
+
+        <header class="sticky">
+            <nav class="navbar">
+            <!-- Menu icon (mobile only) -->
+            <div class="menu-icon" id="menu-toggle">☰</div>
+
+            <!-- Logo -->
+            <div class="logo">
+                <a href="Home.html">
+                    <img src="All-images/logo4.png" alt="Ford Foundation Grants Logo">
+                </a>
+            </div>
+
+            <!-- Desktop Navigation -->
+            <ul class="nav-links">
+                <li><a href="Home.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="Faqs-t&c-pp.html">FAQs</a></li>
+                <li><a href="Home.html#how-it-works">Programs</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+
+            <!-- Apply Button (always visible on right for both views) -->
+            <a href="apply.html" class="apply-link">
+                <button class="apply-btn">Apply</button>
+            </a>
+            </nav>
+
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobile-menu">
+            <div class="menu-header">
+                <span>Menu</span>
+                <button id="close-menu" class="close-btn">×</button>
+            </div>
+            <ul>
+                <li><a href="Home.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="Faqs-t&c-pp.html">FAQs</a></li>
+                <li><a href="Home.html#how-it-works">Programs</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li>
+                <a href="apply.html">
+                <button class="apply-btn">Apply</button>
+                </a>
+                </li>
+            </ul>
+            </div>
+
+            <!-- Overlay -->
+            <div id="overlay" class="overlay"></div>
+        </header>
+
+
+        <!-- Hero Section -->
+        <section class="contact-hero">
+            <lord-icon src="https://cdn.lordicon.com/ehfubvwr.json" trigger="loop"
+            colors="primary:#4CAF50,secondary:#4CAF50" style="width:100px;height:100px">
+            </lord-icon>
+            <h1>We’re Here to Help</h1>
+            <p>Have questions about your grant application or need assistance? Reach out below — our team is ready to support you.</p>
+        </section>
+
+        <!-- Contact Form -->
+        <section class="contact-form-section">
+
+          <form name="contact" netlify netlify-honeypot="bot-field" id="contactForm">
+            <input type="hidden" name="form-name" value="contact" />
+
+            <!-- Full Name -->
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" id="name" name="name" autocomplete="name" required />
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" autocomplete="email" />
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" autocomplete="off" required />
+            </div>
+
+            <!-- Subject Dropdown -->
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <select id="subject" name="subject" required>
+                <option value="">-- Select a Subject --</option>
+                <option value="Application Status">Application Status</option>
+                <option value="How to Qualify">How to Qualify for a Grant</option>
+                <option value="Assigned Agent">Questions About Assigned Agent</option>
+                <option value="Update Application">Updating Application Details</option>
+                <option value="Technical Support">Technical Support</option>
+                <option value="Other Inquiry">Other Inquiry</option>
+              </select>
+            </div>
+
+            <!-- Message -->
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">Send Message</button>
+          </form>
+
+          <!-- Success Message -->
+          <div id="formSuccess" class="form-success hidden">
+            <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop"
+                colors="primary:#4CAF50,secondary:#4CAF50" style="width:100px;height:100px">
+            </lord-icon>
+            <h2>Thank you!</h2>
+            <p>Your message has been submitted. Our team will get back to you shortly.</p>
+            <a href="Home.html" class="btn-home">Go Back to Homepage</a>
+          </div>
+        </section>
+
+        <!-- Contact Info -->
+        <section class="contact-info">
+            <div class="info-card">
+              <lord-icon src="https://cdn.lordicon.com/tmqaflqo.json" trigger="loop"
+                colors="primary:#4CAF50" style="width:60px;height:60px">
+              </lord-icon>
+              <h3>Email</h3>
+              <p>support@fordfoundationgrant.com</p>
+            </div>
+            <div class="info-card">
+              <lord-icon src="https://cdn.lordicon.com/ftndcppj.json" trigger="loop"
+                colors="primary:#4CAF50" style="width:60px;height:60px">
+              </lord-icon>
+              <h3>Phone</h3>
+              <p>+1 (309) 666-0465</p>
+            </div>
+            <div class="info-card">
+              <lord-icon src="https://cdn.lordicon.com/zzcjjxew.json" trigger="loop"
+                colors="primary:#4CAF50" style="width:60px;height:60px">
+              </lord-icon>
+              <h3>Address</h3>
+              <p>320 East 43rd Street,<br> New York, NY 10017</p>
+            </div>
+        </section>
+
+        <!-- FAQ Teaser -->
+        <section class="faq-teaser">
+            <lord-icon src="https://cdn.lordicon.com/kkcllwsu.json" trigger="loop"
+            colors="primary:#4CAF50" style="width:80px;height:80px">
+            </lord-icon>
+            <h2>Looking for quick answers?</h2>
+            <p>Visit our FAQs page for more information about eligibility, applications, and support.</p>
+            <a href="Faqs-t&c-pp.html" class="btn-faq">View All FAQs</a>
+        </section>
+
+        <!-- ========== FOOTER START ========== -->
+        <footer>
+          <!-- Upper Footer -->
+          <div class="footer-top">
+            <div class="footer-logo-section">
+              <img src="All-images/logo1.png" alt="Ford Foundation Grants Logo" class="footer-logo">
+              <p class="empower-text">Empowering individuals to build a brighter future.</p>
+            </div>
+            <div class="footer-social">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+  
+          <!-- Lower Footer -->
+          <div class="footer-bottom">
+            <div class="footer-column">
+              <h4>Contact Us</h4>
+              <p>Email: support@fordfoundationgrant.com</p>
+              <p>Phone: +1 (901) 599-3934</p>
+              <p>Address: 320 East 43rd Street,<br> New York, NY 10017</p>
+            </div>
+  
+            <div class="footer-column">
+              <h4>Quick Links</h4>
+              <ul>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="Home.html#how-it-works">How It Works</a></li>
+                <li><a href="Home.html#eligibility">Eligibility</a></li>
+                <li><a href="Faqs-t&c-pp.html">FAQs</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="Faqs-t&c-pp.html">Privacy & Terms</a></li>
+              </ul>
+            </div>
+  
+            <div class="footer-column">
+              <h4>Subscribe</h4>
+              <form id="newsletter-form">
+                <input type="email" id="newsletter-email" placeholder="Enter your email" required>
+
+                <label>
+                  <input type="checkbox" name="email_consent">
+                  I agree to receive email updates from Ford Foundation Grants.
+                </label>
+                <input type="number" id="newsletter-sms" placeholder="Enter your Phone number" required>
+                <label>
+                  <input type="checkbox" name="sms_consent">
+                  I agree to receive SMS messages from Ford Foundation Grants with updates about my application. Msg & data rates may apply.
+                </label>
+
+                <button type="submit">Subscribe</button>
+              </form>
+              <p id="success-message" class="success-message">✅ Subscription successful!</p>
+            </div>
+          </div>
+  
+          <!-- Copyright -->
+          <div class="footer-copyright">
+            <p>&copy; <span id="year"></span> Ford Foundation Grants. All rights reserved.</p>
+          </div>
+        </footer>
+        
+        <script>
+          // auto-update year
+          document.getElementById("year").textContent = new Date().getFullYear();
+        </script>
+
+
+        <script src="form.js"></script>
+        <script src="navbar.js"></script>
+
+    </body>
+</html>

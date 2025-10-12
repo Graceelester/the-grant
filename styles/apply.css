@@ -1,0 +1,281 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3rem;
+  background: linear-gradient(to right, #f9f9f6);
+}
+
+.hero-content {
+  flex: 1;
+  padding-right: 2rem;
+}
+
+.hero-content h1 {
+  color: #4b0082;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  color: #2b2b2b;
+  
+}
+
+.hero-image {
+  flex: 1;
+  text-align: right;
+}
+
+.hero-image img {
+  max-width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.75);
+}
+
+/* Form Section */
+.application-form {
+  max-width: 700px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #d6cfdf;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.application-form form {
+  width: 100%;
+}
+
+fieldset {
+  border: none;
+  display: none;
+}
+
+fieldset.active {
+  display: block;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+legend {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+  color: #4b0082;
+}
+
+/* Labels + Inputs */
+.form-step label {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  color: #37025d;
+  font-weight: 800;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+#upload{
+  width: 100%;
+  padding: 0.7rem;
+  font-size: 1rem;
+}
+
+
+.upload-group label{
+  display: inline-block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  margin-right: 1rem;
+  vertical-align: middle;
+  color: #37025d;
+}
+
+input[type="file"] {
+  border: none;
+  padding: 0;
+  display: inline-block;
+  width: auto;
+  height: auto;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Checkbox / Radio fixes */
+input[type="checkbox"],
+input[type="radio"] {
+  margin-right: 0.5rem;
+  transform: scale(1.2);
+  vertical-align: middle;
+}
+
+/* Buttons */
+button {
+  padding: 0.8rem 1.5rem;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.next-btn,
+.submit-btn {
+  background: #28a745;
+  color: #f8f9fa;
+}
+
+.next-btn:hover,
+.submit-btn:hover {
+  background: #4b0082;
+}
+
+.prev-btn {
+  background: #28a745;
+  color: #f8f9fa;
+}
+
+.prev-btn:hover {
+  background: #4b0082;
+}
+
+
+/* Next Steps Section */
+.next-steps {
+  background: #f8f9fb;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.next-steps h2 {
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  color: #4b0082;
+}
+
+.steps-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.step-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.step-card:hover {
+  transform: translateY(-8px);
+}
+
+.step-card h3 {
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
+  font-size: 1.3rem;
+  color: #222;
+}
+
+.step-card p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.next-cta {
+  margin-top: 3rem;
+}
+
+.next-cta p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.cta-btn {
+  display: inline-block;
+  background: #28a745;
+  color: #fff;
+  padding: 0.9rem 2rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.cta-btn:hover {
+  background: #218838;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .steps-container {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+
+  .hero-content {
+    padding: 0;
+  }
+
+  .hero-image {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .hero-image img {
+    max-width: 100%;
+  }
+
+  .application-form {
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+  }
+}
