@@ -95,7 +95,7 @@
         <!-- Contact Form -->
         <section class="contact-form-section">
 
-          <form name="contact" netlify netlify-honeypot="bot-field" id="contactForm">
+          <form method="POST" action="http://127.0.0.1:5000/api/submit-contact" enctype="multipart/form-data">
             <input type="hidden" name="form-name" value="contact" />
 
             <!-- Full Name -->
