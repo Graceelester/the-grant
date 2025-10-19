@@ -51,57 +51,57 @@
 //   showStep(currentStep);
 // });
 
-document.addEventListener("DOMContentLoaded", function () {
-  const form = document.getElementById("contactForm");
-  const success = document.getElementById("formSuccess");
+// document.addEventListener("DOMContentLoaded", function () {
+//   const form = document.getElementById("contactForm");
+//   const success = document.getElementById("formSuccess");
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+//   form.addEventListener("submit", async function (e) {
+//     e.preventDefault();
 
-    const formData = new FormData(form);
+//     const formData = new FormData(form);
 
-    try {
-      const response = await fetch("/api/submit-contact", {
-        method: "POST",
-        body: formData,
-      });
+//     try {
+//       const response = await fetch("/api/submit-contact", {
+//         method: "POST",
+//         body: formData,
+//       });
 
-      if (response.ok) {
-        // Hide form
-        form.style.display = "none";
+//       if (response.ok) {
+//         // Hide form
+//         form.style.display = "none";
 
-        // Show success container
-        success.classList.remove("hidden");
+//         // Show success container
+//         success.classList.remove("hidden");
 
-        // Force reflow for Lordicon to render correctly
-        success.offsetHeight; // hack to trigger reflow
+//         // Force reflow for Lordicon to render correctly
+//         success.offsetHeight; // hack to trigger reflow
 
-        // Optional: animate opacity for smooth appearance
-        success.style.opacity = 0;
-        success.style.transition = "opacity 0.3s ease-in-out";
-        requestAnimationFrame(() => {
-          success.style.opacity = 1;
-        });
+//         // Optional: animate opacity for smooth appearance
+//         success.style.opacity = 0;
+//         success.style.transition = "opacity 0.3s ease-in-out";
+//         requestAnimationFrame(() => {
+//           success.style.opacity = 1;
+//         });
 
-        // Reset form fields
-        form.reset();
-      } else {
-        // Try to extract JSON error if available
-        let errorMsg = "Something went wrong. Please try again.";
-        try {
-          const data = await response.json();
-          if (data.error) errorMsg = data.error;
-        } catch (err) {
-          // Not JSON or no body
-        }
-        alert(errorMsg);
-      }
-    } catch (error) {
-      alert("Network error — please check your connection and try again.");
-      console.error(error);
-    }
-  });
-});
+//         // Reset form fields
+//         form.reset();
+//       } else {
+//         // Try to extract JSON error if available
+//         let errorMsg = "Something went wrong. Please try again.";
+//         try {
+//           const data = await response.json();
+//           if (data.error) errorMsg = data.error;
+//         } catch (err) {
+//           // Not JSON or no body
+//         }
+//         alert(errorMsg);
+//       }
+//     } catch (error) {
+//       alert("Network error — please check your connection and try again.");
+//       console.error(error);
+//     }
+//   });
+// });
 
 
 
