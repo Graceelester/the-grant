@@ -141,6 +141,7 @@ def submit_contact():
     try:
         form_data = {k: v for k, v in request.form.items()}
         saved_files = save_uploaded_files(request.files)
+        
         body_lines = ["New Contact Submission", "------------------------"]
         for k, v in form_data.items():
             body_lines.append(f"{k}: {v}")
@@ -148,13 +149,15 @@ def submit_contact():
             body_lines.append("\nAttachments:")
             for k, p in saved_files:
                 body_lines.append(f"{k}: {p}")
+        
         subject = f"Contact form: {form_data.get('name', form_data.get('email','Contact'))}"
         notify_admin(subject, "\n".join(body_lines), saved_files)
 
-        # Return JSON instead of redirect
-        return jsonify({"ok": True})
+        # ✅ Redirect to success page instead of returning JSON
+        return redirect("/contact-success.html")
+        
     except Exception as e:
         print("Contact error:", e)
         traceback.print_exc()
+        # Keep JSON response for errors
         return jsonify({"ok": False, "error": "Server error"}), 500
-

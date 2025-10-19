@@ -3,27 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Application Submitted</title>
-  <link rel="stylesheet" href="styles/success.css">
+  <title>Contact Submission - Ford Foundation Grants</title>
+  <link rel="icon" type="image/png" href="All-images/logo5.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="All-images/logo5.png">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Lordicon Script -->
   <script src="https://cdn.lordicon.com/lordicon.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="styles/commonstyles.css">
+  <link rel="stylesheet" href="styles/navbar.css">
+  <link rel="stylesheet" href="styles/footer.css">
+  <style>
+    .success-section {
+      text-align: center;
+      padding: 5rem 1rem;
+      background-color: #F9F9F6;
+      min-height: 60vh;
+    }
+    .success-section h1 {
+      color: #2E8B57;
+      margin-top: 1rem;
+    }
+    .success-section p {
+      margin: 1rem 0;
+      font-size: 1.1rem;
+      color: #2B2B2B;
+    }
+    .btn-home {
+      display: inline-block;
+      background-color: #2E8B57;
+      color: #F9F9F6;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .btn-home:hover {
+      background-color: #4B0082;
+    }
+  </style>
 </head>
 <body>
-  <div class="success-wrapper">
-    <div class="success-box">
-      <!-- Lordicon animated checkmark -->
-      <lord-icon
+
+  <!-- Navbar -->
+  <header class="sticky">
+    <nav class="navbar">
+      <div class="menu-icon" id="menu-toggle">☰</div>
+      <div class="logo">
+        <a href="Home.html">
+          <img src="All-images/logo4.png" alt="Ford Foundation Grants Logo">
+        </a>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="Faqs-tc-pp.html">FAQs</a></li>
+        <li><a href="Home.html#how-it-works">Programs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+
+      <a href="apply.html" class="apply-link">
+        <button class="apply-btn">Apply</button>
+      </a>
+    </nav>
+
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="menu-header">
+        <span>Menu</span>
+        <button id="close-menu" class="close-btn">×</button>
+      </div>
+      <ul>
+        <li><a href="Home.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="Faqs-tc-pp.html">FAQs</a></li>
+        <li><a href="Home.html#how-it-works">Programs</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="apply.html"><button class="apply-btn">Apply</button></a></li>
+      </ul>
+    </div>
+    <div id="overlay" class="overlay"></div>
+  </header>
+
+  <!-- Success Section -->
+  <section class="success-section">
+    <lord-icon
         src="https://cdn.lordicon.com/lupuorrc.json"
         trigger="loop"
         delay="2000"
         colors="primary:#4B0082,secondary:#28a745"
         style="width:120px;height:120px;  border-radius:50%; padding:20px; margin-bottom: 30px;">
       </lord-icon>
-
-      <h1>Application Submitted</h1>
+    <h1>Application Submitted</h1>
       <p>Your application has been successfully submitted and is under review.<br>
       An assigned agent will contact you with the next steps.</p>
       <a href="Home.html" class="home-btn">Go Back to Homepage</a>
+  </section>
+  
+  
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-logo-section">
+        <img src="All-images/logo1.png" alt="Ford Foundation Grants Logo" class="footer-logo">
+        <p class="empower-text">Empowering individuals to build a brighter future.</p>
+      </div>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook-f"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+      </div>
     </div>
-  </div>
+    <div class="footer-bottom">
+      <div class="footer-column">
+        <h4>Contact Us</h4>
+        <p>Email: support@fordfoundationgrant.com</p>
+        <p>Phone: +1 (901) 599-3934</p>
+        <p>Address: 320 East 43rd Street,<br> New York, NY 10017</p>
+      </div>
+      <div class="footer-column">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="Home.html#how-it-works">How It Works</a></li>
+          <li><a href="Home.html#eligibility">Eligibility</a></li>
+          <li><a href="Faqs-tc-pp.html">FAQs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="Faqs-tc-pp.html">Privacy & Terms</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4>Subscribe</h4>
+        <form id="newsletter-form">
+          <input type="email" id="newsletter-email" placeholder="Enter your email" required>
+          <label>
+            <input type="checkbox" name="email_consent">
+            I agree to receive email updates from Ford Foundation Grants.
+          </label>
+          <input type="number" id="newsletter-sms" placeholder="Enter your Phone number" required>
+          <label>
+            <input type="checkbox" name="sms_consent">
+            I agree to receive SMS messages from Ford Foundation Grants with updates about my application. Msg & data rates may apply.
+          </label>
+          <button type="submit">Subscribe</button>
+        </form>
+        <p id="success-message" class="success-message">✅ Subscription successful!</p>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <p>&copy; <span id="year"></span> Ford Foundation Grants. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // auto-update year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <script src="navbar.js"></script>
+
 </body>
 </html>
