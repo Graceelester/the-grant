@@ -67,10 +67,24 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (response.ok) {
-        // ✅ Success
-        form.reset();
+        // Hide form
         form.style.display = "none";
+
+        // Show success container
         success.classList.remove("hidden");
+
+        // Force reflow for Lordicon to render correctly
+        success.offsetHeight; // hack to trigger reflow
+
+        // Optional: animate opacity for smooth appearance
+        success.style.opacity = 0;
+        success.style.transition = "opacity 0.3s ease-in-out";
+        requestAnimationFrame(() => {
+          success.style.opacity = 1;
+        });
+
+        // Reset form fields
+        form.reset();
       } else {
         // Try to extract JSON error if available
         let errorMsg = "Something went wrong. Please try again.";
@@ -88,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
 
 
 
