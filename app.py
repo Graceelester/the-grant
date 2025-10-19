@@ -150,12 +150,11 @@ def submit_contact():
                 body_lines.append(f"{k}: {p}")
         subject = f"Contact form: {form_data.get('name', form_data.get('email','Contact'))}"
         notify_admin(subject, "\n".join(body_lines), saved_files)
-        return redirect("/contact-success.html")
+
+        # ✅ Return success as JSON for your JS fetch handler
+        return jsonify({"success": True}), 200
+
     except Exception as e:
         print("Contact error:", e)
         traceback.print_exc()
         return jsonify({"ok": False, "error": "Server error"}), 500
-
-# ---------- Run Server ----------
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

@@ -67,18 +67,28 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       if (response.ok) {
+        // ✅ Success
         form.reset();
         form.style.display = "none";
-        success.style.display = "block";
+        success.classList.remove("hidden");
       } else {
-        const data = await response.json();
-        alert("Error: " + data.error);
+        // Try to extract JSON error if available
+        let errorMsg = "Something went wrong. Please try again.";
+        try {
+          const data = await response.json();
+          if (data.error) errorMsg = data.error;
+        } catch (err) {
+          // Not JSON or no body
+        }
+        alert(errorMsg);
       }
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      alert("Network error — please check your connection and try again.");
+      console.error(error);
     }
   });
 });
+
 
 
 
