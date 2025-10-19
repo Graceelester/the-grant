@@ -56,27 +56,31 @@ def send_email_via_sendgrid(subject, plain_text, files):
         raise RuntimeError("SendGrid not available or API key missing")
 
     message = Mail(
-        from_email="support@fordfoundationgrant.com",  # Verified sender
-        to_emails=ADMIN_EMAIL,                         # Use env variable
+        from_email=os.environ.get("SENDGRID_VERIFIED_SENDER"),  # Verified sender email
+        to_emails=ADMIN_EMAIL,
         subject=subject,
         plain_text_content=plain_text
     )
 
     import base64
+    from sendgrid.helpers.mail import Attachment
+
     for key, path in files:
         with open(path, "rb") as f:
             data = f.read()
         encoded = base64.b64encode(data).decode()
         attachment = Attachment(
-            FileContent(encoded),
-            FileName(Path(path).name),
-            FileType(mimetypes.guess_type(path)[0] or "application/octet-stream"),
-            Disposition("attachment")
+            file_content=encoded,
+            file_type=mimetypes.guess_type(path)[0] or "application/octet-stream",
+            file_name=Path(path).name,
+            disposition="attachment"
         )
         message.add_attachment(attachment)
 
     sg = SendGridAPIClient(SENDGRID_API_KEY)
     return sg.send(message)
+
+
 
 
 def send_email_via_smtp(to_email, subject, plain_text, files):
