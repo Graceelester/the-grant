@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Ford Foundation Grants - Contact Us</title>
-        <link rel="icon" type="image/png" href="All-images/logo5.png">
-        <link rel="apple-touch-icon" sizes="180x180" href="All-images/logo5.png">
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Ford Foundation Grants - Contact Us</title>
+      <link rel="icon" type="image/png" href="All-images/logo5.png">
+      <link rel="apple-touch-icon" sizes="180x180" href="All-images/logo5.png">
 
 
 
-        <!-- Google Fonts -->
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+      <!-- Google Fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
-        <!-- Lordicon Script -->
-        <script src="https://cdn.lordicon.com/lordicon.js"></script>
+      <!-- Lordicon Script -->
+      <script src="https://cdn.lordicon.com/lordicon.js"></script>
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 
 
-        <!-- External CSS -->
-        <link rel="stylesheet" href="/styles/commonstyles.css">
-        <link rel="stylesheet" href="/styles/navbar.css">
-        <link rel="stylesheet" href="/styles/contact.css">
-        <link rel="stylesheet" href="/styles/footer.css">
+      <!-- External CSS -->
+      <link rel="stylesheet" href="styles/commonstyles.css">
+      <link rel="stylesheet" href="styles/navbar.css">
+      <link rel="stylesheet" href="styles/contact.css">
+      <link rel="stylesheet" href="styles/footer.css">
 
 
     </head>
@@ -95,9 +95,7 @@
         <!-- Contact Form -->
         <section class="contact-form-section">
 
-          <form method="POST" action="/api/submit-application" enctype="multipart/form-data">
-            <input type="hidden" name="form-name" value="contact" />
-
+          <form id="contactForm" action="/api/submit-contact" method="POST" enctype="multipart/form-data">
             <!-- Full Name -->
             <div class="form-group">
               <label for="name">Full Name</label>
@@ -107,7 +105,7 @@
             <!-- Email -->
             <div class="form-group">
               <label for="email">Email Address</label>
-              <input type="email" id="email" name="email" autocomplete="email" />
+              <input type="email" id="email" name="email" autocomplete="email" required />
             </div>
 
             <!-- Phone -->
@@ -136,9 +134,16 @@
               <textarea id="message" name="message" rows="5" required></textarea>
             </div>
 
+            <!-- Optional File Upload -->
+            <div class="form-group">
+              <label for="attachment">Attachment (optional)</label>
+              <input type="file" id="attachment" name="attachment" />
+            </div>
+
             <!-- Submit Button -->
             <button type="submit" class="btn-submit">Send Message</button>
           </form>
+
 
           <!-- Success Message -->
           <div id="formSuccess" class="form-success hidden">

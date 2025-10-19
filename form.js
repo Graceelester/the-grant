@@ -51,28 +51,35 @@
 //   showStep(currentStep);
 // });
 
-// document.addEventListener("DOMContentLoaded", function () {
-//   const form = document.getElementById("contactForm");
-//   const success = document.getElementById("formSuccess");
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("contactForm");
+  const success = document.getElementById("formSuccess");
 
-//   form.addEventListener("submit", async function (e) {
-//     e.preventDefault();
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-//     const formData = new FormData(form);
+    const formData = new FormData(form);
 
-//     try {
-//       await fetch("/", {
-//         method: "POST",
-//         body: formData,
-//       });
+    try {
+      const response = await fetch("/api/submit-contact", {
+        method: "POST",
+        body: formData,
+      });
 
-//       form.style.display = "none";
-//       success.style.display = "block";
-//     } catch (error) {
-//       alert("Something went wrong. Please try again.");
-//     }
-//   });
-// });
+      if (response.ok) {
+        form.reset();
+        form.style.display = "none";
+        success.style.display = "block";
+      } else {
+        const data = await response.json();
+        alert("Error: " + data.error);
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+    }
+  });
+});
+
 
 
 // Payment Method Logic
