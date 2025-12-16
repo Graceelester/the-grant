@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 style="text-align:center; margin:40px 0; color:#6a1b9a;">
+  Make a Transfer
+</h2>
+
+<!-- Main Transfer Options -->
+<div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-bottom:30px;">
+  <div id="achCard"
+       style="background:#6a1b9a; color:#e8e0ed; flex:1 1 250px; padding:20px;
+              border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+              cursor:pointer; text-align:center;">
+    <h3>ACH Transfer</h3>
+    <p>Send money using ACH</p>
+  </div>
+
+  <div id="wireCard"
+       style="background:#6a1b9a; color:#e8e0ed; flex:1 1 250px; padding:20px;
+              border-radius:14px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+              cursor:pointer; text-align:center;">
+    <h3>Wire Transfer</h3>
+    <p>Send money instantly via Wire</p>
+  </div>
+</div>
+
+<!-- Quick Options -->
+<div style="display:flex; justify-content:center; gap:15px; margin-bottom:30px;">
+  <div class="quick-option" onclick="alert('Not enrolled or allowed')">Zelle</div>
+  <div class="quick-option" onclick="alert('Not enrolled or allowed')">Bill Pay</div>
+  <div class="quick-option" onclick="alert('Not enrolled or allowed')">Spend</div>
+</div>
+
+<!-- Illustration -->
+<div style="text-align:center; margin-bottom:30px;">
+  <img src="{{ url_for('static', filename='images/transfer.jpg') }}"
+       alt="Transfer"
+       style="max-width:440px; border-radius:10px;">
+</div>
+
+<!-- Transfer Form -->
+<div id="transferFormContainer" style="display:none; margin-top:20px;">
+  <div class="card" style="max-width:500px; margin:auto; padding:20px;">
+    <h3 id="transferTypeTitle">Transfer</h3>
+
+    <form id="transferForm" method="POST">
+      <input type="text" name="recipient_name" placeholder="Recipient Name" required>
+      <input type="text" name="account_number" placeholder="Recipient Account Number" required>
+      <input type="text" name="routing_number" placeholder="Routing Number" required>
+      <input type="text" name="recipient_bank" placeholder="Recipient Bank Name" required>
+      <input type="number" name="amount" placeholder="Amount" required>
+      <input type="text" name="notes" placeholder="Notes (optional)">
+
+      <button type="submit"
+              style="background:#6a1b9a; color:white; padding:12px 20px;
+                     border:none; border-radius:8px; margin-top:10px;">
+        Send
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- Loading -->
+<div id="loadingContainer" style="display:none; text-align:center; margin-top:40px;">
+  <div style="position:relative; width:120px; height:120px; margin:auto;">
+    <svg width="120" height="120">
+      <circle cx="60" cy="60" r="50" stroke="#ddd" stroke-width="10" fill="none"></circle>
+      <circle id="progressCircle"
+              cx="60" cy="60" r="50"
+              stroke="#6a1b9a" stroke-width="10"
+              fill="none"
+              stroke-dasharray="314"
+              stroke-dashoffset="314"
+              transform="rotate(-90 60 60)">
+      </circle>
+    </svg>
+
+    <div id="progressText"
+         style="position:absolute; top:50%; left:50%;
+                transform:translate(-50%,-50%); font-size:20px;">
+      0%
+    </div>
+  </div>
+
+  <p id="loadingMessage" style="margin-top:20px;"></p>
+
+  <button id="backDashboardBtn"
+          style="display:none; background:#6a1b9a; color:white;
+                 padding:10px 16px; border:none; border-radius:8px;
+                 margin-top:20px;"
+          onclick="goBack()">
+    Back to Dashboard
+  </button>
+</div>
+
+<style>
+.quick-option {
+  width:50px;
+  height:50px;
+  background:#6a1b9a;
+  color:white;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:12px;
+}
+</style>
+
+<script>
+const achCard = document.getElementById("achCard");
+const wireCard = document.getElementById("wireCard");
+const formContainer = document.getElementById("transferFormContainer");
+const transferForm = document.getElementById("transferForm");
+const transferTypeTitle = document.getElementById("transferTypeTitle");
+
+const loadingContainer = document.getElementById("loadingContainer");
+const progressCircle = document.getElementById("progressCircle");
+const progressText = document.getElementById("progressText");
+const loadingMessage = document.getElementById("loadingMessage");
+const backBtn = document.getElementById("backDashboardBtn");
+
+let selectedTransferType = "";
+
+achCard.onclick = () => {
+  selectedTransferType = "ACH Transfer";
+  showForm();
+};
+
+wireCard.onclick = () => {
+  selectedTransferType = "Wire Transfer";
+  showForm();
+};
+
+function showForm() {
+  formContainer.style.display = "block";
+  transferTypeTitle.textContent = selectedTransferType;
+  window.scrollTo({ top: formContainer.offsetTop, behavior: "smooth" });
+}
+
+transferForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+  formContainer.style.display = "none";
+  loadingContainer.style.display = "block";
+  startLoading();
+});
+
+function startLoading() {
+  let progress = 0;
+  const total = 314;
+
+  const interval = setInterval(() => {
+    if (progress >= 95) {
+      clearInterval(interval);
+      loadingMessage.textContent =
+        "Error: You have pending disbursement requirements to complete.";
+      backBtn.style.display = "inline-block";
+    } else {
+      progress++;
+      progressCircle.style.strokeDashoffset =
+        total - (total * progress / 100);
+      progressText.textContent = progress + "%";
+    }
+  }, 50);
+}
+
+function goBack() {
+  window.location.href = "{{ url_for('account.index') }}";
+}
+</script>
+
+{% endblock %}

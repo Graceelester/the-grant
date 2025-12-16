@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 style="text-align:center; margin-bottom:20px;">Help & Support</h2>
+
+<div id="chatContainer" style="max-width:600px; margin:auto; border:1px solid #ddd; border-radius:14px; padding:20px; display:flex; flex-direction:column; gap:12px; height:500px; overflow-y:auto; background:#f9f9f9;">
+</div>
+
+<div id="typingIndicator" style="display:none; max-width:600px; margin:auto; padding:10px; font-style:italic; color:#555;">Bot is typing...</div>
+
+<div style="max-width:600px; margin:20px auto; display:flex; gap:8px;">
+    <input type="text" id="userInput" placeholder="Type your question..." style="flex:1; padding:12px; border-radius:8px; border:1px solid #ccc;">
+    <button id="sendBtn" style="background:#6a1b9a; color:white; border:none; border-radius:8px; padding:12px 16px;">Send</button>
+</div>
+
+<script>
+const chatContainer = document.getElementById("chatContainer");
+const userInput = document.getElementById("userInput");
+const sendBtn = document.getElementById("sendBtn");
+const typingIndicator = document.getElementById("typingIndicator");
+
+function addMessage(sender, message){
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.alignItems = "flex-end";
+
+    const msg = document.createElement("div");
+    msg.style.padding = "12px";
+    msg.style.borderRadius = "16px";
+    msg.style.maxWidth = "70%";
+    msg.style.wordWrap = "break-word";
+    msg.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+    msg.textContent = message;
+
+    const avatar = document.createElement("div");
+    avatar.style.width = "32px";
+    avatar.style.height = "32px";
+    avatar.style.borderRadius = "50%";
+    avatar.style.display = "flex";
+    avatar.style.alignItems = "center";
+    avatar.style.justifyContent = "center";
+    avatar.style.fontSize = "16px";
+    avatar.style.color = "white";
+    avatar.style.flexShrink = "0";
+
+    if(sender === "user"){
+        wrapper.style.justifyContent = "flex-end";
+        msg.style.background = "#6a1b9a";
+        msg.style.color = "white";
+        avatar.style.background = "#6a1b9a";
+        avatar.textContent = "U";
+        wrapper.appendChild(msg);
+        wrapper.appendChild(avatar);
+    } else {
+        wrapper.style.justifyContent = "flex-start";
+        msg.style.background = "#eee";
+        msg.style.color = "#000";
+        avatar.style.background = "#ccc";
+        avatar.textContent = "B";
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(msg);
+    }
+
+    chatContainer.appendChild(wrapper);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+async function getBotReply(text){
+    typingIndicator.style.display = "block";
+    try {
+        const res = await fetch("{{ url_for('account.chat_api') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        typingIndicator.style.display = "none";
+        addMessage("bot", data.reply);
+    } catch (err) {
+        typingIndicator.style.display = "none";
+        addMessage("bot", "Sorry, there was an error. Try again.");
+    }
+}
+
+sendBtn.addEventListener("click", () => {
+    const text = userInput.value.trim();
+    if(!text) return;
+    addMessage("user", text);
+    userInput.value = "";
+    getBotReply(text);
+});
+
+userInput.addEventListener("keypress", (e) => {
+    if(e.key === "Enter") sendBtn.click();
+});
+</script>
+
+{% endblock %}

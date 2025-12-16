@@ -10,10 +10,12 @@ from email.message import EmailMessage
 
 try:
     from sendgrid import SendGridAPIClient
-    from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
+    from sendgrid.helpers.mail import Mail, Attachment
     SENDGRID_AVAILABLE = True
 except Exception:
     SENDGRID_AVAILABLE = False
+
+from account.routes import account_bp  # import the blueprint
 
 # ---------- Config ----------
 ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
@@ -29,6 +31,10 @@ MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 25 * 1024 * 1024))
 # ---------- Initialize ----------
 app = Flask(__name__, static_folder="")  # Serve current folder as static
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+app.secret_key = "your_very_secret_key_here"
+
+# ---------- Register Blueprint ----------
+app.register_blueprint(account_bp, url_prefix='/account')
 
 # ---------- Serve Static Files ----------
 @app.route("/<path:path>")
@@ -161,3 +167,7 @@ def submit_contact():
         traceback.print_exc()
         # Keep JSON response for errors
         return jsonify({"ok": False, "error": "Server error"}), 500
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

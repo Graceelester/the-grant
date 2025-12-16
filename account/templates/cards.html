@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 style="margin-bottom:16px;">Your Cards</h2>
+
+<!-- Virtual Card -->
+<div class="card" style="background:linear-gradient(135deg,#6a1b9a,#4a148c); color:white;">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h3>Virtual Card</h3>
+    <span style="font-weight:600;">VISA</span>
+  </div>
+
+  <div style="margin:20px 0; font-size:20px; letter-spacing:2px;" id="cardNumber">
+    **** **** **** 0000
+  </div>
+
+  <div style="display:flex; justify-content:space-between; font-size:14px;">
+    <div>
+      <small>EXP</small><br>
+      <span id="cardExpiry">00/00</span>
+    </div>
+    <div>
+      <small>CVV</small><br>
+      <span id="cardCVV">000</span>
+    </div>
+  </div>
+</div>
+
+<!-- Card Status -->
+<div class="card">
+  <p style="color:#c62828; font-weight:600;">
+    Your FFG card is temporarily frozen.
+  </p>
+  <p style="font-size:14px; color:#555;">
+    Please contact support to unfreeze your card or request a physical card.
+  </p>
+</div>
+
+<!-- Request Physical Card -->
+<div class="card">
+  <h3>Request Physical Card</h3>
+  <button id="requestCardBtn"
+    style="margin-top:10px; background:#6a1b9a; color:white; padding:12px;
+           border:none; border-radius:10px; width:100%;">
+    Get a Physical Card
+  </button>
+</div>
+
+<!-- Physical Card Form -->
+<!-- Physical Card Form -->
+<div id="cardFormContainer" style="display:none; margin-top:30px;">
+  <div class="card" style="max-width:500px; margin:auto; padding:20px; border-radius:14px; box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+    <h3>Confirm Your Details</h3>
+
+    <form id="cardForm" style="display:flex; flex-direction:column; gap:12px;">
+      <input type="text" placeholder="Full Name" required style="padding:12px; border-radius:8px; border:1px solid #ccc;">
+      <input type="date" required style="padding:12px; border-radius:8px; border:1px solid #ccc;">
+      <input type="text" placeholder="Home Address" required style="padding:12px; border-radius:8px; border:1px solid #ccc;">
+
+      <button type="submit"
+        style="background:#6a1b9a; color:white; padding:12px; border:none; border-radius:10px; margin-top:10px; width:100%;">
+        Get My Card
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Loading -->
+<div id="loadingContainer" style="display:none; text-align:center; margin-top:40px;">
+  <div style="position:relative; width:120px; height:120px; margin:auto;">
+    <svg width="120" height="120">
+      <circle cx="60" cy="60" r="50" stroke="#ddd" stroke-width="10" fill="none"></circle>
+      <circle id="progressCircle"
+        cx="60" cy="60" r="50"
+        stroke="#6a1b9a" stroke-width="10" fill="none"
+        stroke-dasharray="314"
+        stroke-dashoffset="314"
+        transform="rotate(-90 60 60)">
+      </circle>
+    </svg>
+
+    <div id="progressText"
+      style="position:absolute; top:50%; left:50%;
+             transform:translate(-50%,-50%);
+             font-size:20px;">
+      0%
+    </div>
+  </div>
+
+  <p id="loadingMessage" style="margin-top:20px;"></p>
+
+  <button id="backBtn"
+    style="display:none; background:#6a1b9a; color:white;
+           padding:10px 16px; border:none; border-radius:8px; margin-top:20px;"
+    data-url="{{ url_for('account.index') }}">
+    Back to Dashboard
+  </button>
+
+  <script>
+  document.getElementById("backBtn").onclick = function() {
+      window.location.href = this.dataset.url;
+  };
+  </script>
+
+
+
+</div>
+
+<script>
+// Generate random card data
+function randomDigits(length) {
+  return Array.from({length}, () => Math.floor(Math.random() * 10)).join('');
+}
+
+document.getElementById("cardNumber").textContent =
+  "**** **** **** " + randomDigits(4);
+
+document.getElementById("cardCVV").textContent = randomDigits(3);
+
+const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+const year = String(new Date().getFullYear() + Math.floor(Math.random() * 5)).slice(-2);
+document.getElementById("cardExpiry").textContent = `${month}/${year}`;
+
+// Request Physical Card
+const requestBtn = document.getElementById("requestCardBtn");
+const formContainer = document.getElementById("cardFormContainer");
+const cardForm = document.getElementById("cardForm");
+
+requestBtn.onclick = () => {
+  formContainer.style.display = "block";
+  requestBtn.style.display = "none";
+};
+
+cardForm.onsubmit = function(e){
+  e.preventDefault();
+  formContainer.style.display = "none";
+  document.getElementById("loadingContainer").style.display = "block";
+  startLoading();
+};
+
+function startLoading(){
+  let progress = 0;
+  const total = 314;
+
+  const interval = setInterval(() => {
+    if(progress >= 95){
+      clearInterval(interval);
+      document.getElementById("loadingMessage").textContent =
+        "Error: You have pending disbursement requirements to complete.";
+      document.getElementById("backBtn").style.display = "inline-block";
+    } else {
+      progress++;
+      document.getElementById("progressCircle").style.strokeDashoffset =
+        total - (total * progress / 100);
+      document.getElementById("progressText").textContent = progress + "%";
+    }
+  }, 50);
+}
+</script>
+
+{% endblock %}

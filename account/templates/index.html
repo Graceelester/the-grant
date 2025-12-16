@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="greeting-section">
+    <h2 id="greeting">Good morning</h2>
+    <p class="welcome-name">Welcome back, {{ user_name or "User" }}</p>
+</div>
+
+<!-- Balance Card -->
+<div class="card balance-card">
+  <p class="label">Current Balance</p>
+  <h1 class="balance">${{ grant_amount or "0.00" }}</h1>
+  <p class="account-type">Checking Account ****{{ account_last4 or "1234" }}</p>
+</div>
+
+<!-- Recent Activity -->
+<div class="card">
+  <h3>Recent Activity</h3>
+  <div class="activity-item">
+    <div>
+      <p class="activity-title">Initial Grant Credit</p>
+      <small class="activity-date">{{ signup_date or "Mar 10, 2025" }}</small>
+    </div>
+    <span class="activity-amount positive">+${{ grant_amount or "0.00" }}</span>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+  <h3>Quick Actions</h3>
+  <div class="quick-actions">
+    <a href="{{ url_for('account.transfer') }}" class="action-card">Transfer</a>
+    <a href="{{ url_for('account.cards') }}" class="action-card">Cards</a>
+    <a href="{{ url_for('account.profile') }}" class="action-card">Profile</a>
+  </div>
+</div>
+
+<!-- Grant Application Number Card -->
+<div class="card">
+  <h3>Grant Application Number</h3>
+  <p style="font-size: 18px; font-weight: 600;">{{ application_number or "N/A" }}</p>
+</div>
+
+<!-- Notifications -->
+<div class="card">
+  <h3>Notifications</h3>
+  <ul class="notification-list">
+    <li>Your approved grant amount has been credited successfully.</li>
+  </ul>
+</div>
+
+<!-- Banking Tips -->
+<div class="card">
+  <h3>Banking Tips</h3>
+  <ul class="notification-list">
+    <li>Remember to complete your Disbursement requirements for full account features.</li>
+  </ul>
+</div>
+
+{% endblock %}
