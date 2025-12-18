@@ -87,11 +87,11 @@ header{
     z-index: 1000;
 }
 
-.mobile-menu ul :hover{
+/* .mobile-menu ul :hover{
     background-color: #28a428;
     width: 60%;
     border-radius: 30px;
-}
+} */
 
 .mobile-menu.active{
     left: 0;

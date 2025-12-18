@@ -2,20 +2,28 @@ from flask import Blueprint, render_template, request, redirect, session, jsonif
 import sqlite3
 import random
 import datetime
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# -------------------- BLUEPRINT --------------------
+# =========================================================
+# BLUEPRINT
+# =========================================================
 account_bp = Blueprint(
-    'account',  # blueprint endpoint name
+    'account',
     __name__,
     template_folder='templates',
     static_folder='static'
 )
 
-# -------------------- DATABASE --------------------
+# =========================================================
+# DATABASE CONFIGURATION (FIXES DATA LOSS)
+# =========================================================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "ffg_credit_union.db")
+
 def get_db_connection():
     conn = sqlite3.connect(
-        "ffg_credit_union.db",
+        DB_PATH,
         timeout=10,
         check_same_thread=False
     )
@@ -25,8 +33,7 @@ def get_db_connection():
 
 def init_db():
     conn = get_db_connection()
-    c = conn.cursor()
-    c.execute("""
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             full_name TEXT NOT NULL,
@@ -44,9 +51,12 @@ def init_db():
     conn.commit()
     conn.close()
 
+# INITIALIZE DATABASE ON APP START
 init_db()
 
-# -------------------- HELPERS --------------------
+# =========================================================
+# HELPERS
+# =========================================================
 def generate_account_last4():
     return str(random.randint(1000, 9999))
 
@@ -64,9 +74,11 @@ def validate_captcha(user_input):
     session.pop('captcha_answer', None)
     return valid
 
-# -------------------- ROUTES --------------------
+# =========================================================
+# ROUTES
+# =========================================================
 
-# ----- Dashboard / Home -----
+# ----- Dashboard -----
 @account_bp.route('/')
 def index():
     user_id = session.get('user_id')
@@ -74,7 +86,10 @@ def index():
         return redirect('/account/login')
 
     conn = get_db_connection()
-    user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    user = conn.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (user_id,)
+    ).fetchone()
     conn.close()
 
     if not user:
@@ -92,9 +107,10 @@ def index():
     )
 
 # ----- Signup -----
-@account_bp.route("/signup", methods=["GET", "POST"])
+@account_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
+
         if not validate_captcha(request.form.get('captcha_response')):
             return render_template(
                 'signup.html',
@@ -113,13 +129,12 @@ def signup():
         application_number = request.form['application_number']
 
         conn = get_db_connection()
-        c = conn.cursor()
         try:
-            c.execute("""
-                INSERT INTO users
-                (full_name, email, password, dob, address, ssn,
-                 grant_amount, account_last4, signup_date, application_number)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            conn.execute("""
+                INSERT INTO users (
+                    full_name, email, password, dob, address, ssn,
+                    grant_amount, account_last4, signup_date, application_number
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 name, email, password, dob, address, ssn,
                 grant_amount, generate_account_last4(),
@@ -136,7 +151,10 @@ def signup():
                 show_bottom_nav=False
             )
 
-        user_id = c.lastrowid
+        user_id = conn.execute(
+            "SELECT id FROM users WHERE email = ?",
+            (email,)
+        ).fetchone()['id']
         conn.close()
 
         session['user_id'] = user_id
@@ -153,6 +171,7 @@ def signup():
 @account_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+
         if not validate_captcha(request.form.get('captcha_response')):
             return render_template(
                 'login.html',
@@ -165,7 +184,10 @@ def login():
         password = request.form['password']
 
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+        user = conn.execute(
+            "SELECT * FROM users WHERE email = ?",
+            (email,)
+        ).fetchone()
         conn.close()
 
         if user and check_password_hash(user['password'], password):
@@ -194,7 +216,10 @@ def profile():
         return redirect('/account/login')
 
     conn = get_db_connection()
-    user = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    user = conn.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (user_id,)
+    ).fetchone()
     conn.close()
 
     if not user:
@@ -211,7 +236,7 @@ def profile():
         show_bottom_nav=True
     )
 
-# ----- Other Pages -----
+# ----- Pages -----
 @account_bp.route('/transfer')
 def transfer():
     return render_template('transfer.html', show_bottom_nav=True)
@@ -230,27 +255,25 @@ def logout():
     session.clear()
     return redirect('/account/login')
 
-# ----- Chat Bot API -----
+# ----- Chat API -----
 @account_bp.route('/api/chat', methods=['POST'])
 def chat_api():
     user_message = request.json.get('message', '').lower()
 
-    bot_responses = {
+    responses = {
         "hi": "Hello! How can I assist you today?",
         "hello": "Hi there! How can I help?",
-        "reset password": "To reset your password, go to the login page and click 'Forgot Password'.",
-        "account": "You can view your account details on the Dashboard.",
-        "transfer": "To make a transfer, visit the Transfer page and select your preferred method.",
-        "card": "For card issues, you can order a new card on the Cards page.",
+        "reset password": "Click 'Forgot Password' on the login page.",
+        "account": "Your account details are on the dashboard.",
+        "transfer": "You can transfer funds from the Transfer page.",
+        "card": "Manage your cards on the Cards page."
     }
 
-    response = bot_responses.get("default", "Sorry, I don't understand. Can you try rephrasing your question?")
-    for key, reply in bot_responses.items():
+    for key, reply in responses.items():
         if key in user_message:
-            response = reply
-            break
+            return jsonify({"reply": reply})
 
-    return jsonify({"reply": response})
+    return jsonify({"reply": "Sorry, I didn't understand that."})
 
 # ----- Forgot Password -----
 @account_bp.route('/forgot-password', methods=['GET', 'POST'])
@@ -259,11 +282,18 @@ def forgot_password():
         email = request.form.get('email', '').strip()
 
         conn = get_db_connection()
-        user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+        user = conn.execute(
+            "SELECT id FROM users WHERE email = ?",
+            (email,)
+        ).fetchone()
         conn.close()
 
         if not user:
-            return render_template('forgot_password.html', error="Email not found", show_bottom_nav=False)
+            return render_template(
+                'forgot_password.html',
+                error="Email not found",
+                show_bottom_nav=False
+            )
 
         session['reset_user_id'] = user['id']
         return redirect('/account/reset-password')
@@ -278,15 +308,21 @@ def reset_password():
         return redirect('/account/forgot-password')
 
     if request.method == 'POST':
-        password = request.form.get('password', '').strip()
-        confirm_password = request.form.get('confirm_password', '').strip()
+        password = request.form.get('password')
+        confirm = request.form.get('confirm_password')
 
-        if not password or password != confirm_password:
-            return render_template('reset_password.html', error="Passwords do not match", show_bottom_nav=False)
+        if not password or password != confirm:
+            return render_template(
+                'reset_password.html',
+                error="Passwords do not match",
+                show_bottom_nav=False
+            )
 
-        hashed = generate_password_hash(password)
         conn = get_db_connection()
-        conn.execute("UPDATE users SET password = ? WHERE id = ?", (hashed, user_id))
+        conn.execute(
+            "UPDATE users SET password = ? WHERE id = ?",
+            (generate_password_hash(password), user_id)
+        )
         conn.commit()
         conn.close()
 

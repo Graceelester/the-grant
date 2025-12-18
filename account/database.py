@@ -1,11 +1,17 @@
 import sqlite3
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "ffg_credit_union.db")
+
+def get_db_connection():
+    return sqlite3.connect(DB_PATH)
 
 def init_db():
-    conn = sqlite3.connect("ffg_credit_union.db")
+    conn = get_db_connection()
     c = conn.cursor()
 
-    # Create users table
-    c.execute('''
+    c.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             full_name TEXT NOT NULL,
@@ -18,11 +24,11 @@ def init_db():
             account_last4 TEXT,
             signup_date TEXT
         )
-    ''')
+    """)
 
     conn.commit()
     conn.close()
 
 if __name__ == "__main__":
     init_db()
-    print("Database initialized")
+    print("Database initialized at:", DB_PATH)
