@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, session, jsonify
-import sqlite3
+import psycopg2
+import psycopg2.extras
 import random
 import datetime
 import os
@@ -16,39 +17,36 @@ account_bp = Blueprint(
 )
 
 # =========================================================
-# DATABASE CONFIGURATION (FIXES DATA LOSS)
+# DATABASE CONFIGURATION (PostgreSQL)
 # =========================================================
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "ffg_credit_union.db")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 def get_db_connection():
-    conn = sqlite3.connect(
-        DB_PATH,
-        timeout=10,
-        check_same_thread=False
+    return psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=psycopg2.extras.RealDictCursor
     )
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA journal_mode=WAL;")
-    return conn
 
 def init_db():
     conn = get_db_connection()
-    conn.execute("""
+    cur = conn.cursor()
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             full_name TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
             password TEXT NOT NULL,
             dob TEXT,
             address TEXT,
             ssn TEXT,
-            grant_amount REAL,
+            grant_amount NUMERIC,
             account_last4 TEXT,
             signup_date TEXT,
             application_number TEXT
-        )
+        );
     """)
     conn.commit()
+    cur.close()
     conn.close()
 
 # INITIALIZE DATABASE ON APP START
@@ -86,10 +84,10 @@ def index():
         return redirect('/account/login')
 
     conn = get_db_connection()
-    user = conn.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (user_id,)
-    ).fetchone()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cur.fetchone()
+    cur.close()
     conn.close()
 
     if not user:
@@ -120,7 +118,7 @@ def signup():
             )
 
         name = request.form['name']
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = generate_password_hash(request.form['password'])
         dob = request.form['dob']
         address = request.form['address']
@@ -129,20 +127,25 @@ def signup():
         application_number = request.form['application_number']
 
         conn = get_db_connection()
+        cur = conn.cursor()
         try:
-            conn.execute("""
+            cur.execute("""
                 INSERT INTO users (
                     full_name, email, password, dob, address, ssn,
                     grant_amount, account_last4, signup_date, application_number
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
             """, (
                 name, email, password, dob, address, ssn,
                 grant_amount, generate_account_last4(),
                 datetime.datetime.now().strftime("%b %d, %Y"),
                 application_number
             ))
+            user_id = cur.fetchone()['id']
             conn.commit()
-        except sqlite3.IntegrityError:
+        except psycopg2.errors.UniqueViolation:
+            conn.rollback()
+            cur.close()
             conn.close()
             return render_template(
                 'signup.html',
@@ -151,10 +154,7 @@ def signup():
                 show_bottom_nav=False
             )
 
-        user_id = conn.execute(
-            "SELECT id FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()['id']
+        cur.close()
         conn.close()
 
         session['user_id'] = user_id
@@ -180,14 +180,14 @@ def login():
                 show_bottom_nav=False
             )
 
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = request.form['password']
 
         conn = get_db_connection()
-        user = conn.execute(
-            "SELECT * FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+        cur.close()
         conn.close()
 
         if user and check_password_hash(user['password'], password):
@@ -216,10 +216,10 @@ def profile():
         return redirect('/account/login')
 
     conn = get_db_connection()
-    user = conn.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (user_id,)
-    ).fetchone()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cur.fetchone()
+    cur.close()
     conn.close()
 
     if not user:
@@ -279,13 +279,13 @@ def chat_api():
 @account_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        email = request.form.get('email', '').strip()
+        email = request.form.get('email', '').strip().lower()
 
         conn = get_db_connection()
-        user = conn.execute(
-            "SELECT id FROM users WHERE email = ?",
-            (email,)
-        ).fetchone()
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+        cur.close()
         conn.close()
 
         if not user:
@@ -319,11 +319,13 @@ def reset_password():
             )
 
         conn = get_db_connection()
-        conn.execute(
-            "UPDATE users SET password = ? WHERE id = ?",
+        cur = conn.cursor()
+        cur.execute(
+            "UPDATE users SET password = %s WHERE id = %s",
             (generate_password_hash(password), user_id)
         )
         conn.commit()
+        cur.close()
         conn.close()
 
         session.pop('reset_user_id', None)
