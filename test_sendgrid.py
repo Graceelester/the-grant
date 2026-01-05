@@ -1,28 +1,23 @@
 import os
-print("SendGrid Key:", os.getenv("SENDGRID_API_KEY"))
-
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 
-# Get the API key from your environment variable
+# Get the SendGrid API key from environment variable
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+if not SENDGRID_API_KEY:
+    raise RuntimeError("SENDGRID_API_KEY is not set in environment variables!")
 
-# Initialize the client
 sg = SendGridAPIClient(SENDGRID_API_KEY)
 
-# Create the message
 message = Mail(
-    from_email="support@fordfoundationgrant.com",
-    to_emails="danielhogwarts29@gmail.com",
-    subject="Test Email",
-    plain_text_content="Hello"
+    from_email=os.getenv("SENDGRID_VERIFIED_SENDER"),  # verified sender email
+    to_emails=os.getenv("ADMIN_EMAIL"),                # admin email
+    subject="Grant Application Received",
+    plain_text_content="New grant application has been submitted."
 )
 
-# Send the message
 try:
     response = sg.send(message)
-    print(response.status_code)
-    print(response.body)
-    print(response.headers)
+    print("Email sent! Status code:", response.status_code)
 except Exception as e:
-    print(e)
+    print("SendGrid error:", e)

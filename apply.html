@@ -98,8 +98,11 @@
       
         <!-- Application Form -->
         <section class="application-form">
-          <form method="POST" action="/api/submit-application" enctype="multipart/form-data">
-            <input type="hidden" name="form-name" value="grant-application">
+          <form id="applicationForm"
+                method="POST"
+                action="/api/submit-application"
+                enctype="multipart/form-data"
+                novalidate>
       
             <!-- Step 1: Eligibility -->
             <fieldset class="form-step">
