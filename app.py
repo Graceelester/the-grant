@@ -1,4 +1,3 @@
-# app.py
 import os
 from flask import Flask, request, redirect, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
@@ -15,7 +14,7 @@ UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "/tmp/grant_uploads"))
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 25 * 1024 * 1024))
 
-# ---------- Initialize ----------
+# ---------- Initialize Flask ----------
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "very_secret_key_here")
@@ -58,7 +57,6 @@ def contact_success():
 
 # ---------- Helper Functions ----------
 def save_uploaded_files(files: dict):
-    """Save uploaded files and return list of (fieldname, path)"""
     saved = []
     for key, file in files.items():
         if file and file.filename:
@@ -69,7 +67,6 @@ def save_uploaded_files(files: dict):
     return saved
 
 def send_email_via_sendgrid(to_email, subject, body_text, files):
-    """Send email using SendGrid API with attachments"""
     from sendgrid import SendGridAPIClient
     from sendgrid.helpers.mail import Mail, Attachment
 
@@ -99,7 +96,6 @@ def send_email_via_sendgrid(to_email, subject, body_text, files):
     sg.send(message)
 
 def notify_admin(subject, body_text, saved_files):
-    """Send email to admin via SendGrid"""
     try:
         send_email_via_sendgrid(ADMIN_EMAIL, subject, body_text, saved_files)
     except Exception as e:
@@ -110,7 +106,7 @@ def notify_admin(subject, body_text, saved_files):
 @app.route("/api/submit-application", methods=["POST"])
 def submit_application():
     try:
-        form_data = {k: v for k, v in request.form.items()}
+        form_data = dict(request.form)
         saved_files = save_uploaded_files(request.files)
 
         body_lines = ["New Application Submission", "------------------------"]
@@ -135,7 +131,7 @@ def submit_application():
 @app.route("/api/submit-contact", methods=["POST"])
 def submit_contact():
     try:
-        form_data = {k: v for k, v in request.form.items()}
+        form_data = dict(request.form)
         saved_files = save_uploaded_files(request.files)
 
         body_lines = ["New Contact Submission", "------------------------"]
@@ -159,25 +155,4 @@ def submit_contact():
 
 # ---------- Run ----------
 if __name__ == "__main__":
-    app.run(debug=True)
-
-
-@app.route("/test-email")
-def test_email():
-    try:
-        from sendgrid import SendGridAPIClient
-        from sendgrid.helpers.mail import Mail
-
-        message = Mail(
-            from_email=os.environ.get("SENDGRID_VERIFIED_SENDER"),
-            to_emails=os.environ.get("ADMIN_EMAIL"),
-            subject="Test Email",
-            plain_text_content="This is a test email from Flask."
-        )
-
-        sg = SendGridAPIClient(os.environ.get("SENDGRID_API_KEY"))
-        response = sg.send(message)
-        return f"Sent! Status code: {response.status_code}"
-    except Exception as e:
-        return f"Error: {e}"
-
+    app.run(debug=False)

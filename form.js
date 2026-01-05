@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   nextBtns.forEach(btn => {
-    btn.type = "button";
+    btn.type = "button"; // prevent accidental submit
     btn.addEventListener("click", () => {
       if (validateStep(currentStep) && currentStep < steps.length - 1) {
         currentStep++;
@@ -76,9 +76,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     IMPORTANT:
-     NO FORM SUBMIT HANDLING
-     Browser submits normally
+     FORM SUBMISSION
+     Let browser handle submission normally
   ========================== */
+  const forms = document.querySelectorAll("form");
+  forms.forEach(form => {
+    form.addEventListener("submit", () => {
+      // Validate final step before submitting
+      if (steps.length > 0 && !validateStep(currentStep)) {
+        // Prevent submission if final step invalid
+        event.preventDefault();
+      }
+      // If valid, browser will handle redirect to success page
+    });
+  });
 
 });
