@@ -160,3 +160,26 @@ def submit_contact():
 # ---------- Run ----------
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+@app.route("/test-email")
+def test_email():
+    try:
+        from sendgrid import SendGridAPIClient
+        from sendgrid.helpers.mail import Mail
+
+        message = Mail(
+            from_email=os.environ.get("SENDGRID_VERIFIED_SENDER"),
+            to_emails=os.environ.get("ADMIN_EMAIL"),
+            subject="Test Email",
+            plain_text_content="This is a test email from Flask."
+        )
+
+        sg = SendGridAPIClient(os.environ.get("SENDGRID_API_KEY"))
+        response = sg.send(message)
+        return f"Sent! Status code: {response.status_code}"
+    except Exception as e:
+        return f"Error: {e}"
+
+print("Form data:", form_data)
+print("Saved files:", saved_files)
