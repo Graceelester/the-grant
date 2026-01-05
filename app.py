@@ -181,5 +181,3 @@ def test_email():
     except Exception as e:
         return f"Error: {e}"
 
-print("Form data:", form_data)
-print("Saved files:", saved_files)
