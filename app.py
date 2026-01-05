@@ -25,13 +25,36 @@ from account.routes import account_bp
 app.register_blueprint(account_bp, url_prefix="/account")
 
 # ---------- Serve static files ----------
-@app.route("/static/<path:path>")
-def serve_static(path):
-    return send_from_directory(".", path)
+@app.route("/styles/<path:filename>")
+def serve_styles(filename):
+    """Serve CSS files from styles folder"""
+    return send_from_directory("styles", filename)
 
+@app.route("/<path:filename>")
+def serve_root_files(filename):
+    """Serve JS, images, or any other file in root folder"""
+    return send_from_directory(".", filename)
+
+# ---------- HTML Routes ----------
 @app.route("/")
-def index():
+def home():
     return send_from_directory(".", "Home.html")
+
+@app.route("/apply.html")
+def apply():
+    return send_from_directory(".", "apply.html")
+
+@app.route("/contact.html")
+def contact():
+    return send_from_directory(".", "contact.html")
+
+@app.route("/success.html")
+def success():
+    return send_from_directory(".", "success.html")
+
+@app.route("/contact-success.html")
+def contact_success():
+    return send_from_directory(".", "contact-success.html")
 
 # ---------- Helper Functions ----------
 def save_uploaded_files(files: dict):
@@ -99,7 +122,7 @@ def submit_application():
             for k, p in saved_files:
                 body_lines.append(f"{k}: {p}")
 
-        subject = f"New application from {form_data.get('full_name', 'Unknown')}"
+        subject = f"New application from {form_data.get('full-name', 'Unknown')}"
         notify_admin(subject, "\n".join(body_lines), saved_files)
 
         return redirect("/success.html")
