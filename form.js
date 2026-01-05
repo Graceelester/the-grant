@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!steps[step]) return true;
 
     const inputs = steps[step].querySelectorAll("input, select, textarea");
-    for (let input of inputs) {
+    for (const input of inputs) {
       if (!input.checkValidity()) {
         input.reportValidity();
         return false;
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   nextBtns.forEach(btn => {
-    btn.type = "button"; // prevent accidental submit
+    btn.type = "button";
     btn.addEventListener("click", () => {
       if (validateStep(currentStep) && currentStep < steps.length - 1) {
         currentStep++;
@@ -64,55 +64,21 @@ document.addEventListener("DOMContentLoaded", () => {
       "ffg-card": document.getElementById("ffg-card-section")
     };
 
-    paymentSelect.addEventListener("change", function () {
+    paymentSelect.addEventListener("change", () => {
       Object.values(sections).forEach(section => {
         if (section) section.style.display = "none";
       });
 
-      if (sections[this.value]) {
-        sections[this.value].style.display = "block";
+      if (sections[paymentSelect.value]) {
+        sections[paymentSelect.value].style.display = "block";
       }
     });
   }
 
   /* =========================
-     FORM SUBMISSION (FETCH)
+     IMPORTANT:
+     NO FORM SUBMIT HANDLING
+     Browser submits normally
   ========================== */
-  const forms = document.querySelectorAll("form[data-ajax='true']");
-
-  forms.forEach(form => {
-    const successDiv = document.getElementById(form.dataset.success);
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const submitBtn = form.querySelector("[type='submit']");
-      if (submitBtn) submitBtn.disabled = true;
-
-      try {
-        const response = await fetch(form.action, {
-          method: "POST",
-          body: new FormData(form)
-        });
-
-        if (!response.ok) {
-          throw new Error("Server returned error");
-        }
-
-        form.style.display = "none";
-        if (successDiv) successDiv.classList.remove("hidden");
-
-        form.reset();
-        currentStep = 0;
-        showStep(currentStep);
-
-      } catch (err) {
-        console.error("Form submit error:", err);
-        alert("Submission failed. Please try again.");
-      } finally {
-        if (submitBtn) submitBtn.disabled = false;
-      }
-    });
-  });
 
 });
