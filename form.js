@@ -106,21 +106,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* =========================
-   SUBMIT LOADING STATE
+    FORM SUBMISSION + LOADING
   ========================= */
-  const applicationForm = document.querySelector("form[action='/api/submit-application']");
-  const submitBtn = document.getElementById("submitApplicationBtn");
-  const loadingOverlay = document.getElementById("loadingOverlay");
+  const loadingOverlay = document.getElementById("form-loading");
 
-  if (applicationForm && submitBtn) {
-    applicationForm.addEventListener("submit", () => {
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Submitting application…";
+  forms.forEach(form => {
+    form.addEventListener("submit", (event) => {
+      if (steps.length > 0 && !validateStep(currentStep)) {
+        event.preventDefault();
+        return;
+      }
 
+      // Show loading overlay
       if (loadingOverlay) {
         loadingOverlay.style.display = "flex";
       }
+
+      // Disable submit button
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting…";
+      }
     });
-  }
+  });
+
 
 });
