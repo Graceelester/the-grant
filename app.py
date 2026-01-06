@@ -21,40 +21,6 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "very_secret_key_here")
 
-# ---------- Import & register blueprints ----------
-from account.routes import account_bp
-app.register_blueprint(account_bp, url_prefix="/account")
-
-# ---------- Serve static files ----------
-@app.route("/styles/<path:filename>")
-def serve_styles(filename):
-    return send_from_directory("styles", filename)
-
-@app.route("/<path:filename>")
-def serve_root_files(filename):
-    return send_from_directory(".", filename)
-
-# ---------- HTML Routes ----------
-@app.route("/")
-def home():
-    return send_from_directory(".", "Home.html")
-
-@app.route("/apply.html")
-def apply():
-    return send_from_directory(".", "apply.html")
-
-@app.route("/contact.html")
-def contact():
-    return send_from_directory(".", "contact.html")
-
-@app.route("/success.html")
-def success():
-    return send_from_directory(".", "success.html")
-
-@app.route("/contact-success.html")
-def contact_success():
-    return send_from_directory(".", "contact-success.html")
-
 # ---------- Helper Functions ----------
 def save_uploaded_files(files: dict):
     saved = []
@@ -79,14 +45,25 @@ def send_email_mailgun(subject, body_text, files):
         "text": body_text
     }
 
-    # Prepare files for Mailgun attachments
+  # Prepare files for Mailgun attachments safely
     files_payload = []
     for key, path in files:
-        files_payload.append(("attachment", (Path(path).name, open(path, "rb").read())))
+        with open(path, "rb") as f:
+            files_payload.append(("attachment", (Path(path).name, f.read())))
 
-    response = requests.post(url, auth=auth, data=data, files=files_payload)
-    if not response.ok:
-        raise RuntimeError(f"Mailgun email failed: {response.text}")
+
+    try:
+        response = requests.post(url, auth=auth, data=data, files=files_payload, timeout=15)
+        if not response.ok:
+            raise RuntimeError(f"Mailgun email failed: {response.text}")
+    finally:
+        # Ensure all file handles are closed even if exception occurs
+        for _, path in files:
+            try:
+                f = open(path, "rb")
+                f.close()
+            except:
+                pass
 
 def notify_admin(subject, body_text, saved_files):
     try:
@@ -94,6 +71,7 @@ def notify_admin(subject, body_text, saved_files):
     except Exception as e:
         print("Mailgun email failed:", e)
         traceback.print_exc()
+
 
 # ---------- API Endpoints ----------
 @app.route("/api/submit-application", methods=["POST"])
