@@ -85,10 +85,14 @@ def send_email_smtp(subject, body_text, files):
         maintype, subtype = "application", "octet-stream"
         if mimetypes.guess_type(path)[0]:
             maintype, subtype = mimetypes.guess_type(path)[0].split("/", 1)
-        msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=Path(path).name)
+        msg.add_attachment(
+            data,
+            maintype=maintype,
+            subtype=subtype,
+            filename=Path(path).name
+        )
 
-    # TLS connection
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=20) as server:
         server.ehlo()
         server.starttls()
         server.ehlo()
