@@ -4,20 +4,17 @@ from werkzeug.utils import secure_filename
 from pathlib import Path
 import mimetypes
 import traceback
-from email.message import EmailMessage
-import smtplib
+import requests
 
 # ---------- Config ----------
 UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "/tmp/grant_uploads"))
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 25 * 1024 * 1024))
 
-# SMTP / Admin
-SMTP_HOST = os.environ.get("SMTP_HOST")  # smtp.web.de
-SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
-SMTP_USER = os.environ.get("SMTP_USER")  # mostwintoci1982@web.de
-SMTP_PASS = os.environ.get("SMTP_PASS")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")  # danielhogwarts29@gmail.com
+# Mailgun / Admin
+MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY")
+MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")  # e.g., mg.fordfoundationgrant.com
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")        # e.g., danielhogwarts29@gmail.com
 
 # ---------- Initialize Flask ----------
 app = Flask(__name__)
@@ -69,41 +66,33 @@ def save_uploaded_files(files: dict):
             saved.append((key, str(out_path)))
     return saved
 
-def send_email_smtp(subject, body_text, files):
-    if not all([SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, ADMIN_EMAIL]):
-        raise RuntimeError("SMTP environment variables are not fully set")
+def send_email_mailgun(subject, body_text, files):
+    if not all([MAILGUN_API_KEY, MAILGUN_DOMAIN, ADMIN_EMAIL]):
+        raise RuntimeError("Mailgun environment variables are not fully set")
 
-    msg = EmailMessage()
-    msg["From"] = SMTP_USER
-    msg["To"] = ADMIN_EMAIL
-    msg["Subject"] = subject
-    msg.set_content(body_text)
+    url = f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages"
+    auth = ("api", MAILGUN_API_KEY)
+    data = {
+        "from": f"Ford Foundation Grant <postmaster@{MAILGUN_DOMAIN}>",
+        "to": ADMIN_EMAIL,
+        "subject": subject,
+        "text": body_text
+    }
 
+    # Prepare files for Mailgun attachments
+    files_payload = []
     for key, path in files:
-        with open(path, "rb") as f:
-            data = f.read()
-        maintype, subtype = "application", "octet-stream"
-        if mimetypes.guess_type(path)[0]:
-            maintype, subtype = mimetypes.guess_type(path)[0].split("/", 1)
-        msg.add_attachment(
-            data,
-            maintype=maintype,
-            subtype=subtype,
-            filename=Path(path).name
-        )
+        files_payload.append(("attachment", (Path(path).name, open(path, "rb").read())))
 
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=20) as server:
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(SMTP_USER, SMTP_PASS)
-        server.send_message(msg)
+    response = requests.post(url, auth=auth, data=data, files=files_payload)
+    if not response.ok:
+        raise RuntimeError(f"Mailgun email failed: {response.text}")
 
 def notify_admin(subject, body_text, saved_files):
     try:
-        send_email_smtp(subject, body_text, saved_files)
+        send_email_mailgun(subject, body_text, saved_files)
     except Exception as e:
-        print("SMTP email failed:", e)
+        print("Mailgun email failed:", e)
         traceback.print_exc()
 
 # ---------- API Endpoints ----------
