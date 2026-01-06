@@ -1,43 +1,34 @@
 import os
-import smtplib
-import traceback
-import mimetypes
-from pathlib import Path
-from email.message import EmailMessage
 from flask import Flask, request, redirect, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
+from pathlib import Path
+import mimetypes
+import traceback
+from email.message import EmailMessage
+import smtplib
 
-# =========================================================
-# CONFIG
-# =========================================================
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
-
-SMTP_HOST = os.environ.get("SMTP_HOST")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
-SMTP_USER = os.environ.get("SMTP_USER")
-SMTP_PASS = os.environ.get("SMTP_PASS")
-
+# ---------- Config ----------
 UPLOAD_DIR = Path(os.environ.get("UPLOAD_DIR", "/tmp/grant_uploads"))
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
 MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH", 25 * 1024 * 1024))
 
-# =========================================================
-# FLASK INIT
-# =========================================================
+# SMTP / Admin
+SMTP_HOST = os.environ.get("SMTP_HOST")  # smtp.web.de
+SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
+SMTP_USER = os.environ.get("SMTP_USER")  # mostwintoci1982@web.de
+SMTP_PASS = os.environ.get("SMTP_PASS")
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")  # danielhogwarts29@gmail.com
+
+# ---------- Initialize Flask ----------
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = MAX_CONTENT_LENGTH
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "very_secret_key_here")
 
-# =========================================================
-# BLUEPRINTS
-# =========================================================
+# ---------- Import & register blueprints ----------
 from account.routes import account_bp
 app.register_blueprint(account_bp, url_prefix="/account")
 
-# =========================================================
-# STATIC FILE ROUTES
-# =========================================================
+# ---------- Serve static files ----------
 @app.route("/styles/<path:filename>")
 def serve_styles(filename):
     return send_from_directory("styles", filename)
@@ -46,9 +37,7 @@ def serve_styles(filename):
 def serve_root_files(filename):
     return send_from_directory(".", filename)
 
-# =========================================================
-# HTML ROUTES
-# =========================================================
+# ---------- HTML Routes ----------
 @app.route("/")
 def home():
     return send_from_directory(".", "Home.html")
@@ -69,21 +58,18 @@ def success():
 def contact_success():
     return send_from_directory(".", "contact-success.html")
 
-# =========================================================
-# HELPERS
-# =========================================================
-def save_uploaded_files(files):
+# ---------- Helper Functions ----------
+def save_uploaded_files(files: dict):
     saved = []
     for key, file in files.items():
         if file and file.filename:
             filename = secure_filename(file.filename)
-            path = UPLOAD_DIR / f"{key}__{filename}"
-            file.save(path)
-            saved.append((key, str(path)))
+            out_path = UPLOAD_DIR / f"{key}__{filename}"
+            file.save(out_path)
+            saved.append((key, str(out_path)))
     return saved
 
-
-def send_email_smtp(subject, body_text, attachments):
+def send_email_smtp(subject, body_text, files):
     if not all([SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, ADMIN_EMAIL]):
         raise RuntimeError("SMTP environment variables are not fully set")
 
@@ -93,27 +79,21 @@ def send_email_smtp(subject, body_text, attachments):
     msg["Subject"] = subject
     msg.set_content(body_text)
 
-    for _, path in attachments:
+    for key, path in files:
         with open(path, "rb") as f:
             data = f.read()
-        mime_type, _ = mimetypes.guess_type(path)
-        if mime_type:
-            maintype, subtype = mime_type.split("/", 1)
-        else:
-            maintype, subtype = "application", "octet-stream"
+        maintype, subtype = "application", "octet-stream"
+        if mimetypes.guess_type(path)[0]:
+            maintype, subtype = mimetypes.guess_type(path)[0].split("/", 1)
+        msg.add_attachment(data, maintype=maintype, subtype=subtype, filename=Path(path).name)
 
-        msg.add_attachment(
-            data,
-            maintype=maintype,
-            subtype=subtype,
-            filename=Path(path).name
-        )
-
+    # TLS connection
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        server.ehlo()
         server.starttls()
+        server.ehlo()
         server.login(SMTP_USER, SMTP_PASS)
         server.send_message(msg)
-
 
 def notify_admin(subject, body_text, saved_files):
     try:
@@ -122,26 +102,24 @@ def notify_admin(subject, body_text, saved_files):
         print("SMTP email failed:", e)
         traceback.print_exc()
 
-# =========================================================
-# API ENDPOINTS
-# =========================================================
+# ---------- API Endpoints ----------
 @app.route("/api/submit-application", methods=["POST"])
 def submit_application():
     try:
         form_data = dict(request.form)
         saved_files = save_uploaded_files(request.files)
 
-        body = ["New Application Submission", "------------------------"]
+        body_lines = ["New Application Submission", "------------------------"]
         for k, v in form_data.items():
-            body.append(f"{k}: {v}")
+            body_lines.append(f"{k}: {v}")
 
         if saved_files:
-            body.append("\nUploaded files:")
+            body_lines.append("\nUploaded files:")
             for k, p in saved_files:
-                body.append(f"{k}: {p}")
+                body_lines.append(f"{k}: {p}")
 
         subject = f"New application from {form_data.get('full-name', 'Unknown')}"
-        notify_admin(subject, "\n".join(body), saved_files)
+        notify_admin(subject, "\n".join(body_lines), saved_files)
 
         return redirect("/success.html")
 
@@ -150,19 +128,23 @@ def submit_application():
         traceback.print_exc()
         return jsonify({"ok": False, "error": "Server error"}), 500
 
-
 @app.route("/api/submit-contact", methods=["POST"])
 def submit_contact():
     try:
         form_data = dict(request.form)
         saved_files = save_uploaded_files(request.files)
 
-        body = ["New Contact Submission", "------------------------"]
+        body_lines = ["New Contact Submission", "------------------------"]
         for k, v in form_data.items():
-            body.append(f"{k}: {v}")
+            body_lines.append(f"{k}: {v}")
 
-        subject = f"Contact form: {form_data.get('name', form_data.get('email', 'Contact'))}"
-        notify_admin(subject, "\n".join(body), saved_files)
+        if saved_files:
+            body_lines.append("\nAttachments:")
+            for k, p in saved_files:
+                body_lines.append(f"{k}: {p}")
+
+        subject = f"Contact form: {form_data.get('name', form_data.get('email','Contact'))}"
+        notify_admin(subject, "\n".join(body_lines), saved_files)
 
         return redirect("/contact-success.html")
 
@@ -171,8 +153,6 @@ def submit_contact():
         traceback.print_exc()
         return jsonify({"ok": False, "error": "Server error"}), 500
 
-# =========================================================
-# RUN
-# =========================================================
+# ---------- Run ----------
 if __name__ == "__main__":
     app.run(debug=False)

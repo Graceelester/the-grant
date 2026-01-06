@@ -76,18 +76,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =========================
-     FORM SUBMISSION
-     Let browser handle submission normally
+     FORM SUBMISSION WITH FILE SIZE CHECK
   ========================== */
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB per file
+
   const forms = document.querySelectorAll("form");
   forms.forEach(form => {
-    form.addEventListener("submit", () => {
-      // Validate final step before submitting
+    form.addEventListener("submit", (event) => {
+      // Validate current step
       if (steps.length > 0 && !validateStep(currentStep)) {
-        // Prevent submission if final step invalid
         event.preventDefault();
+        return;
       }
-      // If valid, browser will handle redirect to success page
+
+      // Step 5: check file sizes
+      const fileInputs = steps[currentStep].querySelectorAll("input[type='file']");
+      for (const input of fileInputs) {
+        for (const file of input.files) {
+          if (file.size > MAX_FILE_SIZE) {
+            alert(`File "${file.name}" exceeds the 5 MB limit.`);
+            event.preventDefault();
+            return;
+          }
+        }
+      }
+      // If valid, browser handles normal form submission and redirect
     });
   });
 
