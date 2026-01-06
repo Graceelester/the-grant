@@ -235,6 +235,23 @@ button {
   transition: background 0.3s ease;
 }
 
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.loader-box {
+  text-align: center;
+}
+
+
 .cta-btn:hover {
   background: #218838;
 }

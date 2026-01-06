@@ -104,4 +104,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
+  /* =========================
+   SUBMIT LOADING STATE
+  ========================= */
+  const applicationForm = document.querySelector("form[action='/api/submit-application']");
+  const submitBtn = document.getElementById("submitApplicationBtn");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+
+  if (applicationForm && submitBtn) {
+    applicationForm.addEventListener("submit", () => {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting application…";
+
+      if (loadingOverlay) {
+        loadingOverlay.style.display = "flex";
+      }
+    });
+  }
+
 });
