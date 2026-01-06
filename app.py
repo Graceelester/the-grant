@@ -21,6 +21,37 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "very_secret_key_here")
 
+# ---------- HTML Routes ----------
+@app.route("/")
+def home():
+    return send_from_directory(".", "Home.html")
+
+@app.route("/apply.html")
+def apply():
+    return send_from_directory(".", "apply.html")
+
+@app.route("/contact.html")
+def contact():
+    return send_from_directory(".", "contact.html")
+
+@app.route("/success.html")
+def success():
+    return send_from_directory(".", "success.html")
+
+@app.route("/contact-success.html")
+def contact_success():
+    return send_from_directory(".", "contact-success.html")
+
+# ---------- Serve static files ----------
+@app.route("/styles/<path:filename>")
+def serve_styles(filename):
+    return send_from_directory("styles", filename)
+
+@app.route("/<path:filename>")
+def serve_root_files(filename):
+    return send_from_directory(".", filename)
+
+
 # ---------- Helper Functions ----------
 def save_uploaded_files(files: dict):
     saved = []
