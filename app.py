@@ -21,6 +21,10 @@ app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "very_secret_key_here")
 
+# ---------- Import & register blueprints ----------
+from account.routes import account_bp
+app.register_blueprint(account_bp, url_prefix="/account")
+
 # ---------- HTML Routes ----------
 @app.route("/")
 def home():
