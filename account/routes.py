@@ -49,8 +49,12 @@ def init_db():
     cur.close()
     conn.close()
 
-# INITIALIZE DATABASE ON APP START
-init_db()
+# INITIALIZE DATABASE ON APP START (safe for Render + Neon)
+try:
+    init_db()
+except Exception as e:
+    print("Database init skipped:", e)
+
 
 # =========================================================
 # HELPERS
