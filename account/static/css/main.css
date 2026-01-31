@@ -83,13 +83,13 @@ body {
 }
 
 .bank-logo {
-  height: 40px;
+  width: 140px;
+  height: 80px;
 }
 
 .help-icon {
-  font-size: 22px;
+  font-size: 25px;
   background: var(--white);
-  padding: 8px;
   border-radius: 50%;
   box-shadow: var(--shadow);
   text-decoration: none;
