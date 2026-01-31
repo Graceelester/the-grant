@@ -1,29 +1,72 @@
 {% extends "base.html" %}
-
 {% block content %}
 
+<!-- Greeting -->
 <div class="greeting-section">
-    <h2 id="greeting">Good morning</h2>
-    <p class="welcome-name">Welcome back, {{ user_name or "User" }}</p>
+  <h2>Good morning</h2>
+  <p class="welcome-name">Welcome back, {{ user_name }}</p>
+</div>
+
+<!-- Account Tabs -->
+<div class="account-tabs">
+  <button class="tab active">Checking</button>
+  <button class="tab disabled">Savings</button>
 </div>
 
 <!-- Balance Card -->
 <div class="card balance-card">
-  <p class="label">Current Balance</p>
-  <h1 class="balance">${{ grant_amount or "0.00" }}</h1>
-  <p class="account-type">Checking Account ****{{ account_last4 or "1234" }}</p>
+  <p class="label">Available Balance</p>
+  <h1 class="balance-large">${{ available_balance }}</h1>
+
+  <div class="sub-balance">
+    <span>Current Balance</span>
+    <strong>${{ current_balance }}</strong>
+  </div>
+
+  <p class="account-type">
+    Checking Account ••••{{ account_last4 }}
+  </p>
 </div>
+
+<!-- Pending Deposits -->
+{% for tx in transactions if tx.status == 'PENDING' %}
+<div class="card pending-card">
+  <div class="pending-left">
+    <p class="pending-title">Pending Deposit</p>
+    <small>
+      Expected availability:
+      {{ tx.available_at.strftime('%b %d, %Y %I:%M %p') }}
+    </small>
+  </div>
+  <span class="pending-amount">
+    +${{ "%.2f"|format(tx.amount) }}
+  </span>
+</div>
+{% endfor %}
 
 <!-- Recent Activity -->
 <div class="card">
   <h3>Recent Activity</h3>
+
+  {% for tx in transactions %}
   <div class="activity-item">
     <div>
-      <p class="activity-title">Initial Grant Credit</p>
-      <small class="activity-date">{{ signup_date or "Mar 10, 2025" }}</small>
+      <p class="activity-title">
+        {{ tx.description }}
+        {% if tx.status == 'PENDING' %}(Pending){% endif %}
+      </p>
+      <small class="activity-date">
+        {{ tx.created_at.strftime('%b %d, %Y • %I:%M %p') }}
+      </small>
     </div>
-    <span class="activity-amount positive">+${{ grant_amount or "0.00" }}</span>
+
+    <span class="activity-amount {% if tx.status == 'PENDING' %}pending{% else %}positive{% endif %}">
+      +${{ "%.2f"|format(tx.amount) }}
+    </span>
   </div>
+  {% else %}
+  <p style="font-size:14px; color:#777;">No recent activity</p>
+  {% endfor %}
 </div>
 
 <!-- Quick Actions -->
@@ -36,26 +79,16 @@
   </div>
 </div>
 
-<!-- Grant Application Number Card -->
-<div class="card">
-  <h3>Grant Application Number</h3>
-  <p style="font-size: 18px; font-weight: 600;">{{ application_number or "N/A" }}</p>
-</div>
-
 <!-- Notifications -->
+{% if transactions|selectattr("status", "equalto", "PENDING")|list %}
 <div class="card">
   <h3>Notifications</h3>
   <ul class="notification-list">
-    <li>Your approved grant amount has been credited successfully.</li>
+    <li>
+      A pending deposit has been received and will be available soon.
+    </li>
   </ul>
 </div>
-
-<!-- Banking Tips -->
-<div class="card">
-  <h3>Banking Tips</h3>
-  <ul class="notification-list">
-    <li>Remember to complete your Disbursement requirements for full account features.</li>
-  </ul>
-</div>
+{% endif %}
 
 {% endblock %}

@@ -39,7 +39,9 @@ body {
   padding-bottom: 90px;
 }
 
-/* Bottom navigation */
+/* ===================== */
+/* Bottom Navigation     */
+/* ===================== */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -70,18 +72,14 @@ body {
   display: none;
 }
 
-/* Updated Dashboard Header */
+/* ===================== */
+/* Header & Greeting     */
+/* ===================== */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-  padding: 0 16px;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
+  margin-bottom: 8px;
 }
 
 .bank-logo {
@@ -89,7 +87,7 @@ body {
 }
 
 .help-icon {
-  font-size: 24px;
+  font-size: 22px;
   background: var(--white);
   padding: 8px;
   border-radius: 50%;
@@ -98,22 +96,51 @@ body {
   color: var(--primary-blue);
 }
 
-/* Greeting section below header */
 .greeting-section {
-  padding: 0 16px 16px 16px;
+  margin-bottom: 16px;
 }
 
 .greeting-section h2 {
+  font-size: 20px;
   color: var(--primary-blue);
-  margin-bottom: 4px;
 }
 
-.greeting-section p {
-  color: var(--medium-gray);
+.welcome-name {
   font-size: 14px;
+  color: var(--medium-gray);
 }
 
-/* Cards */
+/* ===================== */
+/* Account Tabs          */
+/* ===================== */
+.account-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  background: #eee;
+  color: #666;
+}
+
+.tab.active {
+  background: var(--primary-blue);
+  color: var(--white);
+}
+
+.tab.disabled {
+  opacity: 0.5;
+}
+
+/* ===================== */
+/* Cards                 */
+/* ===================== */
 .card {
   background: var(--white);
   border-radius: var(--radius);
@@ -122,46 +149,82 @@ body {
   box-shadow: var(--shadow);
 }
 
+/* ===================== */
+/* Balance Card          */
+/* ===================== */
 .balance-card {
-  background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--secondary-blue)
+  );
   color: var(--white);
 }
 
 .balance-card .label {
+  font-size: 13px;
   opacity: 0.85;
 }
 
-.balance {
-  margin: 8px 0;
+.balance-large {
+  font-size: 34px;
+  font-weight: 700;
+  margin: 8px 0 12px;
 }
 
-.quick-actions {
+.sub-balance {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  font-size: 14px;
+  opacity: 0.9;
 }
 
-.action-card {
-  flex: 1;
-  text-align: center;
-  padding: 14px;
-  background: var(--white);
-  border-radius: var(--radius);
-  text-decoration: none;
-  color: var(--primary-blue);
+.account-type {
+  margin-top: 12px;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ===================== */
+/* Pending Deposit Card  */
+/* ===================== */
+.pending-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid var(--accent-gold);
+}
+
+.pending-title {
   font-weight: 600;
-  box-shadow: var(--shadow);
 }
 
-/* Recent activity */
+.pending-amount {
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+/* ===================== */
+/* Activity List         */
+/* ===================== */
 .activity-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .activity-title {
+  font-weight: 600;
+}
+
+.activity-date {
+  font-size: 12px;
+  color: var(--medium-gray);
+}
+
+.activity-amount.pending {
+  color: var(--accent-gold);
   font-weight: 600;
 }
 
@@ -173,20 +236,41 @@ body {
   color: var(--error);
 }
 
+/* ===================== */
+/* Quick Actions         */
+/* ===================== */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.action-card {
+  flex: 1;
+  text-align: center;
+  padding: 14px;
+  background: var(--light-gray);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+/* ===================== */
+/* Notifications         */
+/* ===================== */
 .notification-list {
   list-style: none;
-  padding-left: 0;
 }
 
 .notification-list li {
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #eee;
   font-size: 14px;
-  color: var(--dark-gray);
 }
 
-
-/* Auth pages */
+/* ===================== */
+/* Auth Pages            */
+/* ===================== */
 .auth-container {
   max-width: 420px;
   margin: 40px auto;
@@ -198,7 +282,6 @@ body {
 
 .auth-container h2 {
   color: var(--primary-blue);
-  margin-bottom: 6px;
 }
 
 .auth-subtitle {
@@ -216,38 +299,20 @@ body {
   padding: 14px;
   border-radius: var(--radius);
   border: 1px solid #ddd;
-  font-size: 14px;
-}
-
-.auth-form input:focus {
-  outline: none;
-  border-color: var(--primary-blue);
 }
 
 .auth-form button {
-  margin-top: 10px;
   padding: 14px;
   background: var(--primary-blue);
   color: var(--white);
   border: none;
   border-radius: var(--radius);
-  font-size: 15px;
   font-weight: 600;
 }
 
-.auth-footer {
-  margin-top: 16px;
-  font-size: 14px;
-  text-align: center;
-}
-
-.auth-footer a {
-  color: var(--primary-blue);
-  text-decoration: none;
-}
-
-
-/* ------------------ Transfer Page ------------------ */
+/* ===================== */
+/* Transfer Page         */
+/* ===================== */
 #transferForm input,
 #transferForm select,
 #transferForm button {
@@ -256,79 +321,20 @@ body {
   margin-bottom: 12px;
   border-radius: var(--radius);
   border: 1px solid #ddd;
-  font-size: 14px;
-  box-sizing: border-box;
 }
 
 #transferForm button {
-  background-color: #6a1b9a;
+  background: var(--primary-blue);
   color: white;
   border: none;
   font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
 }
 
-#transferForm button:hover {
-  background-color: #5a157f;
-}
-
-/* Progress bar container */
-#progressContainer {
-  margin-top: 16px;
-}
-
-#progressContainer div {
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-#progressBar {
-  height: 20px;
-  width: 0%;
-  background-color: #6a1b9a;
-  transition: width 0.2s ease;
-}
-
-#progressText {
-  margin-top: 6px;
-  font-size: 14px;
-  text-align: center;
-  color: var(--dark-gray);
-}
-
-/* Error message styling */
-#errorMessage {
-  margin-top: 12px;
-  text-align: center;
-  font-weight: 600;
-}
-
-#errorMessage a {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #6a1b9a;
-  color: white;
-  border-radius: var(--radius);
-  text-decoration: none;
-  transition: background 0.3s ease;
-}
-
-#errorMessage a:hover {
-  background-color: #5a157f;
-}
-
-/* Mobile-friendly adjustments */
+/* ===================== */
+/* Mobile Tweaks         */
+/* ===================== */
 @media (max-width: 480px) {
-  #transferForm input,
-  #transferForm select,
-  #transferForm button {
-    font-size: 13px;
-    padding: 12px;
-  }
-
-  #progressText {
-    font-size: 13px;
+  .balance-large {
+    font-size: 30px;
   }
 }

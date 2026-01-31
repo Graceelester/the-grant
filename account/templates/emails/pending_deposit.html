@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pending Deposit Received</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family:Arial, Helvetica, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f6f8">
+  <tr>
+    <td align="center">
+
+  <!-- Container -->
+  <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; margin:24px auto; border-radius:8px; overflow:hidden;">
+
+    <!-- Header -->
+    <tr style="background:#6a1b9a;">
+      <td align="center" style="padding:20px;">
+        <img src="https://fordfoundationgrant.com/All-images/logo1.png"
+             alt="FFG Credit Union"
+             width="160"
+             style="display:block; background:#ffffff; border-radius:6px; padding:8px;">
+      </td>
+    </tr>
+
+    <!-- Intro -->
+    <tr>
+      <td style="padding:32px 28px;">
+        <h1 style="margin:0 0 12px; font-size:22px; color:#2e2e2e;">
+          Hello {{ first_name }},
+        </h1>
+
+        <p style="margin:0; font-size:15px; color:#555; line-height:1.6;">
+          We’ve received a deposit into your <strong>FFG Credit Union Checking Account</strong>.
+          The funds are currently pending while standard processing is completed.
+        </p>
+      </td>
+    </tr>
+
+    <!-- Deposit Card -->
+    <tr>
+      <td style="padding:0 28px 24px;">
+        <table width="100%" cellpadding="0" cellspacing="0"
+               style="border:1px solid #e0e0e0; border-radius:6px; background:#fafafa;">
+          <tr>
+            <td style="padding:18px;">
+              <p style="margin:0 0 6px; font-size:14px; color:#777;">
+                Pending Deposit Amount
+              </p>
+              <p style="margin:0; font-size:22px; font-weight:bold; color:#2e7d32;">
+                +${{ amount }}
+              </p>
+
+              <p style="margin:14px 0 0; font-size:14px; color:#555;">
+                <strong>Expected availability:</strong><br>
+                {{ available_at }}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Explanation -->
+    <tr>
+      <td style="padding:0 28px 28px;">
+        <p style="margin:0; font-size:14px; color:#555; line-height:1.6;">
+          While this deposit is pending, it may appear in your current balance
+          but will not be available for transfers or withdrawals until processing
+          is complete.
+        </p>
+      </td>
+    </tr>
+
+    <!-- Security Note -->
+    <tr>
+      <td style="padding:0 28px 28px;">
+        <p style="margin:0; font-size:13px; color:#777;">
+          If you do not recognize this deposit or believe this message was sent
+          in error, please contact FFG Credit Union Support immediately.
+        </p>
+      </td>
+    </tr>
+
+    <!-- Celebratory Banner -->
+    <tr>
+    <td style="padding:25px; background:#6a1b9a; text-align:center; color:#fff;">
+        <h2 style="margin:0; font-size:22px;">🎉 Congratulations Once Again!</h2>
+        <p style="margin:10px 0 0; font-size:15px;">We’re honored to support you and can’t wait to see how this grant helps you achieve your goals.</p>
+    </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td align="center"
+          style="padding:20px; font-size:12px; color:#999; border-top:1px solid #e0e0e0;">
+        FFG Credit Union<br>
+        320 East 43rd Street, New York, NY 10017<br>
+        support@ffgcreditunion.com | +1 (701) 200-0890<br><br>
+        © 2026 FFG Credit Union. All rights reserved.
+      </td>
+    </tr>
+
+  </table>
+  <!-- End Container -->
+
+</td>
+```
+
+  </tr>
+</table>
+
+</body>
+</html>

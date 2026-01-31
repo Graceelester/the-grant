@@ -4,37 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FFG Credit Union</title>
-  <!-- Static files path corrected -->
   <link rel="stylesheet" href="{{ url_for('account.static', filename='css/main.css') }}">
 </head>
 <body>
 
-  {% if show_bottom_nav %}
-  <header class="dashboard-header">
-    <div class="header-left">
-      <img src="{{ url_for('account.static', filename='images/logo1.png') }}" alt="FFG Credit Union" class="bank-logo">
-    </div>
-    <div class="header-right" style="display:flex; align-items:center; gap:10px;">
-      <!-- Use url_for for internal links -->
-      <a href="{{ url_for('account.help_page') }}" class="help-icon">❓</a>
-      <a href="{{ url_for('account.logout') }}" class="help-icon" style="background-color:#c62828; color:white;">⎋</a>
-    </div>
-  </header>
-  {% endif %}
+{% if show_bottom_nav %}
+<header class="dashboard-header">
+  <div class="header-left">
+    <span style="font-weight:700; font-size:18px; color:#6a1b9a;">
+      FFG Credit Union
+    </span>
+  </div>
+  <div class="header-right">
+    <a href="{{ url_for('account.help_page') }}" class="help-icon">?</a>
+  </div>
+</header>
+{% endif %}
 
-  <main class="app-content">
-    {% block content %}{% endblock %}
-  </main>
+<main class="app-content">
+  {% block content %}{% endblock %}
+</main>
 
-  {% if show_bottom_nav %}
-  <nav class="bottom-nav">
-    <a href="{{ url_for('account.index') }}" class="nav-item"><span>🏠</span> Home</a>
-    <a href="{{ url_for('account.transfer') }}" class="nav-item"><span>🔁</span> Transfer</a>
-    <a href="{{ url_for('account.cards') }}" class="nav-item"><span>💳</span> Cards</a>
-    <a href="{{ url_for('account.profile') }}" class="nav-item"><span>👤</span> Profile</a>
-  </nav>
-  {% endif %}
+{% if show_bottom_nav %}
+<nav class="bottom-nav">
+  <a href="{{ url_for('account.index') }}" class="nav-item">
+    <span>🏦</span>
+    Accounts
+  </a>
+  <a href="{{ url_for('account.transfer') }}" class="nav-item">
+    <span>🔁</span>
+    Transfer
+  </a>
+  <a href="{{ url_for('account.cards') }}" class="nav-item">
+    <span>💳</span>
+    Cards
+  </a>
+  <a href="{{ url_for('account.help_page') }}" class="nav-item">
+    <span>💬</span>
+    Help
+  </a>
+</nav>
+{% endif %}
 
-  <script src="{{ url_for('account.static', filename='js/main.js') }}"></script>
 </body>
 </html>
