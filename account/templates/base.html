@@ -11,8 +11,14 @@
 {% if show_bottom_nav %}
 <header class="dashboard-header">
   <div class="header-left">
-    <span style="font-weight:700; font-size:18px; color:#6a1b9a;">
-      FFG Credit Union
+    <span class="logo-container">
+      <img src="{{ url_for('account.static', filename='images/logo1.png') }}" 
+      alt="FFG Credit Union" 
+      class="bank-logo"
+      width="140" 
+      height="70"
+      style="display:block; background-color: #f5f6fa; border-radius: 8px;"
+      />
     </span>
   </div>
   <div class="header-right">
