@@ -79,13 +79,11 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .bank-logo {
-  width: 140px;
+  width: 120px;
   height: 80px;
-  padding: 5px;
 }
 
 .help-icon {
@@ -95,6 +93,7 @@ body {
   box-shadow: var(--shadow);
   text-decoration: none;
   color: var(--primary-blue);
+  padding: 10px;
 }
 
 .greeting-section {
