@@ -1,94 +1,87 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Greeting -->
-<div class="greeting-section">
-  <h2>Good morning</h2>
-  <p class="welcome-name">Welcome back, {{ user_name }}</p>
-</div>
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{{ url_for('account.static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
 
-<!-- Account Tabs -->
-<div class="account-tabs">
-  <button class="tab active">Checking</button>
-  <button class="tab disabled">Savings</button>
-</div>
+<div class="app">
 
-<!-- Balance Card -->
-<div class="card balance-card">
-  <p class="label">Available Balance</p>
-  <h1 class="balance-large">${{ available_balance }}</h1>
+    <!-- HEADER -->
+    <header class="top-header">
+        <img src="{{ url_for('account.static', filename='images/logo12.png') }}" class="logo">
+        <p class="greeting">Good Morning</p>
+    </header>
 
-  <div class="sub-balance">
-    <span>Current Balance</span>
-    <strong>${{ current_balance }}</strong>
-  </div>
+    <!-- ACCOUNT CARD -->
+    <section class="account-card">
+        <div class="account-name">GRANT CHECKING</div>
 
-  <p class="account-type">
-    Checking Account ••••{{ account_last4 }}
-  </p>
-</div>
+        <div class="balance">
+            <span class="currency">$</span>{{ available_balance }}
+        </div>
+        <div class="balance-label">AVAILABLE BALANCE</div>
 
-<!-- Pending Deposits -->
-{% for tx in transactions if tx.status == 'PENDING' %}
-<div class="card pending-card">
-  <div class="pending-left">
-    <p class="pending-title">Pending Deposit</p>
-    <small>
-      Expected availability:
-      {{ tx.available_at.strftime('%b %d, %Y %I:%M %p') }}
-    </small>
-  </div>
-  <span class="pending-amount">
-    +${{ "%.2f"|format(tx.amount) }}
-  </span>
-</div>
-{% endfor %}
+        <div class="current-balance">
+            ${{ current_balance }} <span>CURRENT BALANCE</span>
+        </div>
 
-<!-- Recent Activity -->
-<div class="card">
-  <h3>Recent Activity</h3>
+        <div class="card-footer">
+            <span>•••{{ account_last4 }}</span>
+            <a href="/account/transfer.html">Quick Transfer</a>
+        </div>
+    </section>
 
-  {% for tx in transactions %}
-  <div class="activity-item">
-    <div>
-      <p class="activity-title">
-        {{ tx.description }}
-        {% if tx.status == 'PENDING' %}(Pending){% endif %}
-      </p>
-      <small class="activity-date">
-        {{ tx.created_at.strftime('%b %d, %Y • %I:%M %p') }}
-      </small>
+    <!-- VIEW ALL -->
+    <div class="view-all">
+        <button>View All Accounts</button>
     </div>
 
-    <span class="activity-amount {% if tx.status == 'PENDING' %}pending{% else %}positive{% endif %}">
-      +${{ "%.2f"|format(tx.amount) }}
-    </span>
-  </div>
-  {% else %}
-  <p style="font-size:14px; color:#777;">No recent activity</p>
-  {% endfor %}
+    <!-- RECENT ACTIVITY -->
+    <section class="activity">
+        <div class="activity-header">
+            <h3>RECENT ACTIVITY</h3>
+            <select>
+                <option>Filter Accounts</option>
+            </select>
+        </div>
+
+        {% if deposit_status == "POSTED" %}
+        <div class="activity-item positive">
+            <div>
+                <strong>Grant Deposit</strong>
+                <small>Income</small>
+            </div>
+            <span>+${{ grant_amount }}</span>
+        </div>
+        {% else %}
+        <div class="activity-item pending">
+            <div>
+                <strong>Grant Deposit</strong>
+                <small>Pending</small>
+            </div>
+            <span>Pending</span>
+        </div>
+        {% endif %}
+
+    </section>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <a class="active" href="/account/index"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
+        <a class="active" href="/account/transfer"><i class="fa fa-exchange" aria-hidden="true"></i><span>Transfer</span></a>
+        <a class="active" href="/account/help"><i class="fa fa-comments" aria-hidden="true"></i><span>Chat</span></a>
+        <a class="active" href="/account/cards"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Cards</span></a>
+        <a class="active" href="/account/profile"><i class="fa fa-bars" aria-hidden="true"></i><span>Menu</span></a>
+    </nav>
+
 </div>
 
-<!-- Quick Actions -->
-<div class="card">
-  <h3>Quick Actions</h3>
-  <div class="quick-actions">
-    <a href="{{ url_for('account.transfer') }}" class="action-card">Transfer</a>
-    <a href="{{ url_for('account.cards') }}" class="action-card">Cards</a>
-    <a href="{{ url_for('account.profile') }}" class="action-card">Profile</a>
-  </div>
-</div>
-
-<!-- Notifications -->
-{% if transactions|selectattr("status", "equalto", "PENDING")|list %}
-<div class="card">
-  <h3>Notifications</h3>
-  <ul class="notification-list">
-    <li>
-      A pending deposit has been received and will be available soon.
-    </li>
-  </ul>
-</div>
-{% endif %}
-
-{% endblock %}
+</body>
+</html>

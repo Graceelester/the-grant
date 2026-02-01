@@ -110,15 +110,16 @@ def send_pending_email(user):
         }
     )
 
+# =========================================================
+# DEPOSIT STATE ENGINE
+# =========================================================
 def process_deposit_state(user, cur):
     now = datetime.datetime.utcnow()
 
-    # Move to PENDING
-    if user["deposit_status"] == "SCHEDULED" and user["pending_at"] and now >= user["pending_at"]:
+    # SCHEDULED → PENDING
+    if user["deposit_status"] == "SCHEDULED" and now >= user["pending_at"]:
         cur.execute("""
-            UPDATE users
-            SET deposit_status='PENDING'
-            WHERE id=%s
+            UPDATE users SET deposit_status='PENDING' WHERE id=%s
         """, (user["id"],))
 
         if not user["email_sent"]:
@@ -127,13 +128,18 @@ def process_deposit_state(user, cur):
                 UPDATE users SET email_sent=TRUE WHERE id=%s
             """, (user["id"],))
 
-    # Move to POSTED
-    if user["deposit_status"] == "PENDING" and user["available_at"] and now >= user["available_at"]:
+    # PENDING → POSTED
+    if user["deposit_status"] == "PENDING" and now >= user["available_at"]:
         cur.execute("""
-            UPDATE users
-            SET deposit_status='POSTED'
-            WHERE id=%s
+            UPDATE users SET deposit_status='POSTED' WHERE id=%s
         """, (user["id"],))
+
+        cur.execute("""
+            UPDATE transactions
+            SET status='COMPLETED'
+            WHERE user_id=%s AND status='PENDING'
+        """, (user["id"],))
+
 
 # =========================================================
 # ROUTES
@@ -185,15 +191,11 @@ def signup():
     if request.method == 'POST':
 
         if not validate_captcha(request.form.get('captcha_response')):
-            return render_template(
-                'signup.html',
-                error="Incorrect CAPTCHA",
-                captcha_question=create_captcha(),
-                show_bottom_nav=False
-            )
+            return render_template("signup.html", error="Incorrect CAPTCHA",
+                                   captcha_question=create_captcha())
 
         name = request.form['name']
-        email = request.form['email'].strip().lower()
+        email = request.form['email'].lower().strip()
         password = generate_password_hash(request.form['password'])
         dob = request.form['dob']
         address = request.form['address']
@@ -203,7 +205,7 @@ def signup():
 
         signup_time = datetime.datetime.utcnow()
         pending_at = signup_time + datetime.timedelta(minutes=15)
-        available_at = (signup_time + datetime.timedelta(days=1)).replace(hour=9, minute=0, second=0)
+        available_at = signup_time + datetime.timedelta(days=1)
 
         conn = get_db_connection()
         cur = conn.cursor()
@@ -223,32 +225,28 @@ def signup():
                 application_number, pending_at, available_at
             ))
 
-            user_id = cur.fetchone()['id']
+            user_id = cur.fetchone()["id"]
+
+            # 🔑 CREATE TRANSACTION LEDGER ENTRY
+            cur.execute("""
+                INSERT INTO transactions (user_id, type, amount, status)
+                VALUES (%s,'DEPOSIT',%s,'PENDING')
+            """, (user_id, grant_amount))
+
             conn.commit()
 
         except psycopg2.errors.UniqueViolation:
             conn.rollback()
-            cur.close()
-            conn.close()
-            return render_template(
-                'signup.html',
-                error="Email already registered",
-                captcha_question=create_captcha(),
-                show_bottom_nav=False
-            )
+            return render_template("signup.html", error="Email already registered",
+                                   captcha_question=create_captcha())
 
         cur.close()
         conn.close()
 
-        session['user_id'] = user_id
-        session['user_name'] = name
-        return redirect('/account/')
+        session["user_id"] = user_id
+        return redirect("/account/")
 
-    return render_template(
-        'signup.html',
-        captcha_question=create_captcha(),
-        show_bottom_nav=False
-    )
+    return render_template("signup.html", captcha_question=create_captcha())
 
 # ----- Login -----
 @account_bp.route('/login', methods=['GET', 'POST'])

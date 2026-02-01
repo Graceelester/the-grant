@@ -1,6 +1,6 @@
 :root {
   /* Brand colors */
-  --primary-blue: #6a1b9a;
+  --primary-blue: #4b0082;
   --secondary-blue: #123d6a;
   --accent-gold: #c9a24d;
 
@@ -42,40 +42,40 @@ body {
 /* ===================== */
 /* Bottom Navigation     */
 /* ===================== */
+/* BOTTOM NAV */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: var(--white);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
 }
 
-.nav-item {
-  text-decoration: none;
-  color: var(--medium-gray);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 12px;
+.bottom-nav a {
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+    text-decoration: none;
 }
 
-.nav-item span {
-  font-size: 20px;
+.bottom-nav a.active {
+    color: #4b0082;
+    font-weight: 600;
 }
 
-.disclaimer {
-  display: none;
+.bottom-nav span {
+    display: block;
+    font-size: 10px;
 }
 
 /* ===================== */
 /* Header & Greeting     */
 /* ===================== */
-.dashboard-header {
+.all-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -88,12 +88,8 @@ body {
 
 .help-icon {
   font-size: 35px;
-  background: var(--white);
-  border-radius: 50%;
-  box-shadow: var(--shadow);
   text-decoration: none;
-  color: var(--primary-blue);
-  padding: 10px;
+  padding: 5px;
 }
 
 .greeting-section {
