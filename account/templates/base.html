@@ -14,10 +14,12 @@
 <header class="all-header" style="padding: 10px;">
   <div class="header-left">
     <span class="logo-container">
-      <img src="{{ url_for('account.static', filename='images/logo12.png') }}" 
-      alt="FFG Credit Union" 
-      class="bank-logo"
-      />
+      <a href="{{ url_for('account.index') }}">
+        <img src="{{ url_for('account.static', filename='images/logo12.png') }}" 
+        alt="FFG Credit Union" 
+        class="bank-logo"
+        />
+      </a>
     </span>
   </div>
   <div class="header-right">
@@ -32,11 +34,11 @@
 
 {% if show_bottom_nav %}
 <nav class="bottom-nav">
-        <a class="active" href="/account/index"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
-        <a class="active" href="/account/transfer"><i class="fa fa-exchange" aria-hidden="true"></i><span>Transfer</span></a>
-        <a class="active" href="/account/help"><i class="fa fa-comments" aria-hidden="true"></i><span>Chat</span></a>
-        <a class="active" href="/account/cards"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Cards</span></a>
-        <a class="active" href="/account/profile"><i class="fa fa-bars" aria-hidden="true"></i><span>Menu</span></a>
+        <a class="active" href="{{ url_for('account.index') }}"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
+        <a class="active" href="{{ url_for('account.transfer') }}"><i class="fa fa-exchange" aria-hidden="true"></i><span>Transfer</span></a>
+        <a class="active" href="{{ url_for('account.help_page') }}"><i class="fa fa-comments" aria-hidden="true"></i><span>Chat</span></a>
+        <a class="active" href="{{ url_for('account.cards') }}"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Cards</span></a>
+        <a class="active" href="{{ url_for('account.profile') }}"><i class="fa fa-bars" aria-hidden="true"></i><span>Menu</span></a>
     </nav>
 {% endif %}
 
