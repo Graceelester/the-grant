@@ -15,8 +15,8 @@
 
     <!-- HEADER -->
     <header class="top-header">
-        <img src="{{ url_for('account.static', filename='images/logo12.png') }}" class="logo">
-        <p class="greeting">Good Morning</p>
+        <img src="{{ url_for('account.static', filename='images/logo13.png') }}" class="logo">
+        <p class="welcome-name">Welcome back, {{ user_name or "User" }}</p>
     </header>
 
     <!-- ACCOUNT CARD -->
@@ -66,7 +66,7 @@
                 <strong>Grant Deposit</strong>
                 <small>Pending</small>
             </div>
-            <span>Pending</span>
+            <span>${{ current_balance }}</span>
         </div>
         {% endif %}
 
@@ -74,7 +74,7 @@
 
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">
-        <a class="active" href="/account/index"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
+        <a class="active" href="/account/index.ht"><i class="fa fa-home" aria-hidden="true"></i><span>Home</span></a>
         <a class="active" href="/account/transfer"><i class="fa fa-exchange" aria-hidden="true"></i><span>Transfer</span></a>
         <a class="active" href="/account/help"><i class="fa fa-comments" aria-hidden="true"></i><span>Chat</span></a>
         <a class="active" href="/account/cards"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Cards</span></a>
