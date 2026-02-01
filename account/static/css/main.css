@@ -85,10 +85,11 @@ body {
 .bank-logo {
   width: 140px;
   height: 80px;
+  padding: 5px;
 }
 
 .help-icon {
-  font-size: 25px;
+  font-size: 35px;
   background: var(--white);
   border-radius: 50%;
   box-shadow: var(--shadow);
